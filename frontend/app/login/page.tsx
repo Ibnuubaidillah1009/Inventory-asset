@@ -49,8 +49,8 @@ export default function LoginPage() {
                         localStorage.setItem("menu_tree", JSON.stringify(meResponse.data.menu_tree));
                     }
 
-                    // 5. Lempar ke dashboard
-                    router.push("/dashboard");
+                    // 5. Lempar ke beranda
+                    router.push("/");
                 } catch (errMe) {
                     console.error("Gagal mengambil data /me:", errMe);
                     setError("Gagal mengambil profil pengguna yang lengkap.");
