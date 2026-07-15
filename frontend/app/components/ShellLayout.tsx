@@ -74,7 +74,12 @@ interface MenuItem {
   subItems?: SubItem[];
 }
 
+const MODULE_ROUTE_MAP: Record<string, string> = {
+  'MANAJEMEN PENGGUNA': 'admin',
+};
+
 function modulToPath(namaModul: string): string {
+  if (MODULE_ROUTE_MAP[namaModul]) return MODULE_ROUTE_MAP[namaModul];
   return namaModul.toLowerCase().replace(/_/g, '-').replace(/ /g, '-');
 }
 
