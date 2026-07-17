@@ -135,8 +135,8 @@ export default function DashboardPage() {
         setRecentActivities(activities);
 
         // Aset terbaru
-        const latestAssets: RecentAsset[] = dataAset.slice(0, 5).map((a: any) => ({
-          id: a.kode_inventaris || a.id,
+        const latestAssets: RecentAsset[] = dataAset.slice(0, 5).map((a: any, index: number) => ({
+          id: String(a.id ?? `${a.kode_inventaris}-${index}`),
           kode: a.kode_inventaris || "-",
           nama: a.master_barang?.nama_barang || a.nama_barang || "-",
           status: a.status || "Di Gudang",
