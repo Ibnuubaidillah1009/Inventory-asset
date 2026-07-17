@@ -16,7 +16,7 @@ class BarangNonAktifResource extends JsonResource
             'jumlah_nonaktif' => $this->jumlah_nonaktif,
             'tanggal'         => $this->tanggal,
             'keterangan'      => $this->keterangan,
-            'pengadaan'       => $this->whenLoaded('pengadaan'),
+            'aset'           => $this->whenLoaded('aset'),
             'status_barang'   => $this->whenLoaded('statusBarang'),
         ];
     }

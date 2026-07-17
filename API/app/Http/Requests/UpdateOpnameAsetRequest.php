@@ -16,7 +16,7 @@ class UpdateOpnameAsetRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'kode_inventaris' => ['sometimes', 'required', 'string', 'max:50', 'exists:pengadaan,kode_inventaris'],
+            'kode_inventaris' => ['sometimes', 'required', 'string', 'max:50', 'exists:aset,kode_inventaris'],
             'tanggal_opname'  => ['sometimes', 'required', 'date'],
             'id_kondisi'      => ['nullable', 'integer', 'exists:kondisi,id_kondisi'],
             'keterangan'      => ['nullable', 'string'],

@@ -29,9 +29,9 @@ class BarangNonAktif extends Model
     // RELASI
     // =========================================================================
 
-    public function pengadaan()
+    public function aset()
     {
-        return $this->belongsTo(Pengadaan::class, 'kode_inventaris', 'kode_inventaris');
+        return $this->belongsTo(Aset::class, 'kode_inventaris', 'kode_inventaris');
     }
 
     public function statusBarang()

@@ -60,7 +60,7 @@ class BarangNonAktifController extends Controller
      */
     public function index(): JsonResponse
     {
-        $data = BarangNonAktif::with(['pengadaan.aset', 'statusBarang'])->get();
+        $data = BarangNonAktif::with(['aset', 'statusBarang'])->get();
         return response()->json(['status' => true, 'message' => 'Daftar barang non-aktif berhasil diambil.', 'data' => BarangNonAktifResource::collection($data)]);
     }
 
@@ -74,7 +74,7 @@ class BarangNonAktifController extends Controller
     public function store(StoreBarangNonAktifRequest $request): JsonResponse
     {
         $item = BarangNonAktif::create($request->validated());
-        $item->load(['pengadaan.aset', 'statusBarang']);
+        $item->load(['aset', 'statusBarang']);
         return response()->json(['status' => true, 'message' => 'Barang non-aktif berhasil ditambahkan.', 'data' => new BarangNonAktifResource($item)], 201);
     }
 
@@ -87,7 +87,7 @@ class BarangNonAktifController extends Controller
      */
     public function show(int $id): JsonResponse
     {
-        $item = BarangNonAktif::with(['pengadaan.aset', 'statusBarang'])->find($id);
+        $item = BarangNonAktif::with(['aset', 'statusBarang'])->find($id);
         if (!$item) return response()->json(['status' => false, 'message' => 'Barang non-aktif tidak ditemukan.'], 404);
         return response()->json(['status' => true, 'message' => 'Detail barang non-aktif berhasil diambil.', 'data' => new BarangNonAktifResource($item)]);
     }
@@ -106,7 +106,7 @@ class BarangNonAktifController extends Controller
         if (!$item) return response()->json(['status' => false, 'message' => 'Barang non-aktif tidak ditemukan.'], 404);
 
         $validated = $request->validate([
-            'kode_inventaris' => 'sometimes|string|max:50|exists:pengadaan,kode_inventaris',
+            'kode_inventaris' => 'sometimes|string|max:50|exists:aset,kode_inventaris',
             'id_status'       => 'sometimes|integer|exists:status_barang,id_status',
             'jumlah_nonaktif' => 'nullable|integer|min:1',
             'tanggal'         => 'sometimes|date',
@@ -114,7 +114,7 @@ class BarangNonAktifController extends Controller
         ]);
 
         $item->update($validated);
-        return response()->json(['status' => true, 'message' => 'Barang non-aktif berhasil diperbarui.', 'data' => new BarangNonAktifResource($item->fresh(['pengadaan.aset', 'statusBarang']))]);
+        return response()->json(['status' => true, 'message' => 'Barang non-aktif berhasil diperbarui.', 'data' => new BarangNonAktifResource($item->fresh(['aset', 'statusBarang']))]);
     }
 
     /**

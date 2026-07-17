@@ -16,20 +16,36 @@ class UpdatePengadaanRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'tanggal_pengadaan'         => ['nullable', 'date'],
-            'total_harga'               => ['nullable', 'numeric', 'min:0'],
-            'keterangan'                => ['nullable', 'string'],
-            'kode_gudang'               => ['nullable', 'string', 'exists:gudang,kode_gudang'],
-            'jumlah_pengadaan'          => ['nullable', 'integer', 'min:1'],
-            'id_sumber_perolehan'       => ['nullable', 'integer', 'exists:sumber_perolehan,id_sumber_perolehan'],
-            'status'                    => ['nullable', 'in:diproses,dibelanjakan,selesai'],
-            'permintaan'                => ['nullable', 'array'],
-            'permintaan.*'              => ['string', 'exists:permintaan,kode_permintaan'],
-            'detail'                    => ['nullable', 'array', 'min:1'],
+            'id_pemasok'              => ['nullable', 'integer', 'exists:pemasok,id_pemasok'],
+            'nomor_po'                => ['nullable', 'string', 'max:100', 'unique:pengadaan,nomor_po,' . $this->route('id') . ',id_pengadaan'],
+            'nomor_faktur'            => ['nullable', 'string', 'max:100'],
+            'tanggal_pengadaan'       => ['nullable', 'date'],
+            'total_harga'             => ['nullable', 'numeric', 'min:0'],
+            'persentase_ppn'          => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'nominal_ppn'             => ['nullable', 'numeric', 'min:0'],
+            'grand_total'             => ['nullable', 'numeric', 'min:0'],
+            'keterangan'              => ['nullable', 'string'],
+            'kode_gudang'             => ['nullable', 'string'],
+            'id_sumber_perolehan'     => ['nullable', 'integer'],
+            'id_kondisi'              => ['nullable', 'integer', 'exists:kondisi,id_kondisi'],
+            'sumber_perolehan'        => ['nullable', 'string', 'max:100'],
+            'tanggal_pengiriman'      => ['nullable', 'date'],
+            'nomor_po_lampiran'       => ['nullable', 'string', 'max:255'],
+            'status'                  => ['nullable', 'in:diproses,dibelanjakan,selesai'],
+            'permintaan'              => ['nullable', 'array'],
+            'permintaan.*'            => ['string', 'exists:permintaan,kode_permintaan'],
+            'detail'                  => ['nullable', 'array'],
             'detail.*.id_master_barang' => ['required_with:detail', 'integer', 'exists:master_barang,id_master_barang'],
             'detail.*.jumlah_masuk'     => ['required_with:detail', 'integer', 'min:1'],
             'detail.*.harga_satuan'     => ['nullable', 'numeric', 'min:0'],
-            'detail.*.pemasok'          => ['nullable', 'string', 'max:255'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'nomor_po.unique' => 'Nomor PO sudah digunakan.',
+            'status.in'       => 'Status pengadaan tidak valid.',
         ];
     }
 

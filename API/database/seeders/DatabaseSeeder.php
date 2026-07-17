@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             PeranAksesSeeder::class,
             AdminSetupSeeder::class,
             DummyDataSeeder::class,
+            DummyProsesSeeder::class,
         ]);
     }
 }

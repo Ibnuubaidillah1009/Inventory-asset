@@ -8,39 +8,59 @@ class Pengadaan extends Model
 {
     protected $table = 'pengadaan';
     protected $primaryKey = 'id_pengadaan';
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
+        'id_pemasok',
+        'nomor_po',
+        'nomor_faktur',
         'tanggal_pengadaan',
+        'id_tahun_ajaran',
         'total_harga',
+        'persentase_ppn',
+        'nominal_ppn',
+        'grand_total',
         'keterangan',
         'kode_gudang',
-        'jumlah_pengadaan',
         'id_sumber_perolehan',
-        'status', // diproses, dibelanjakan, selesai
+        'id_kondisi',
+        'jumlah_pengadaan',
+        'status',
+        'tanggal_pengiriman',
+        'nomor_po_lampiran',
     ];
 
     protected function casts(): array
     {
         return [
-            'tanggal_pengadaan' => 'date',
-            'total_harga'       => 'decimal:2',
-            'jumlah_pengadaan'  => 'integer',
+            'tanggal_pengadaan'  => 'date',
+            'total_harga'        => 'decimal:2',
+            'persentase_ppn'     => 'decimal:2',
+            'nominal_ppn'        => 'decimal:2',
+            'grand_total'        => 'decimal:2',
+            'jumlah_pengadaan'   => 'integer',
+            'tanggal_pengiriman' => 'date',
         ];
     }
 
-    // =========================================================================
-    // RELASI
-    // =========================================================================
-
-    public function sumberPerolehan()
+    public function pemasok()
     {
-        return $this->belongsTo(SumberPerolehan::class, 'id_sumber_perolehan', 'id_sumber_perolehan');
+        return $this->belongsTo(Pemasok::class, 'id_pemasok', 'id_pemasok');
     }
 
     public function gudang()
     {
         return $this->belongsTo(Gudang::class, 'kode_gudang', 'kode_gudang');
+    }
+
+    public function kondisi()
+    {
+        return $this->belongsTo(Kondisi::class, 'id_kondisi', 'id_kondisi');
+    }
+
+    public function sumberPerolehan()
+    {
+        return $this->belongsTo(SumberPerolehan::class, 'id_sumber_perolehan', 'id_sumber_perolehan');
     }
 
     public function detailPengadaan()

@@ -6,6 +6,7 @@ use App\Models\Mutasi;
 // use App\Models\DetailMutasi;
 use App\Models\Aset;
 use App\Http\Requests\StoreMutasiRequest;
+use App\Http\Requests\UpdateMutasiRequest;
 use App\Http\Resources\MutasiResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -134,26 +135,60 @@ class MutasiController extends Controller
      *     @OA\Response(response=500, description="Terjadi kesalahan pada server")
      * )
      */
-    // public function destroy(int $id): JsonResponse
-    // {
-    //     $mutasi = Mutasi::find($id);
+    public function update(UpdateMutasiRequest $request, int $id): JsonResponse
+    {
+        $mutasi = Mutasi::find($id);
 
-    //     if (!$mutasi) {
-    //         return response()->json(['status' => false, 'message' => 'Mutasi tidak ditemukan.'], 404);
-    //     }
+        if (!$mutasi) {
+            return response()->json(['status' => false, 'message' => 'Mutasi tidak ditemukan.'], 404);
+        }
 
-    //     try {
-    //         $mutasi->delete();
+        $validated = $request->validated();
 
-    //         return response()->json([
-    //             'status'  => true,
-    //             'message' => 'Data mutasi berhasil dihapus.',
-    //         ]);
-    //     } catch (Exception $e) {
-    //         return response()->json([
-    //             'status'  => false,
-    //             'message' => 'Gagal menghapus mutasi: ' . $e->getMessage(),
-    //         ], 500);
-    //     }
-    // }
+        try {
+            $mutasi->update([
+                'id_jurusan_asal'   => $validated['id_jurusan_asal'] ?? $mutasi->id_jurusan_asal,
+                'id_jurusan_tujuan' => $validated['id_jurusan_tujuan'] ?? $mutasi->id_jurusan_tujuan,
+                'kode_inventaris'   => $validated['kode_inventaris'] ?? $mutasi->kode_inventaris,
+                'tanggal_mutasi'    => $validated['tanggal_mutasi'] ?? $mutasi->tanggal_mutasi,
+                'alasan_mutasi'     => $validated['alasan_mutasi'] ?? $mutasi->alasan_mutasi,
+            ]);
+
+            $mutasi->load(['jurusanAsal', 'jurusanTujuan']);
+
+            return response()->json([
+                'status'  => true,
+                'message' => 'Mutasi berhasil diperbarui.',
+                'data'    => new MutasiResource($mutasi),
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Gagal memperbarui mutasi: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function destroy(int $id): JsonResponse
+    {
+        $mutasi = Mutasi::find($id);
+
+        if (!$mutasi) {
+            return response()->json(['status' => false, 'message' => 'Mutasi tidak ditemukan.'], 404);
+        }
+
+        try {
+            $mutasi->delete();
+
+            return response()->json([
+                'status'  => true,
+                'message' => 'Data mutasi berhasil dihapus.',
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Gagal menghapus mutasi: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
 }

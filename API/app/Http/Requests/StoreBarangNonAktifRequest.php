@@ -13,7 +13,7 @@ class StoreBarangNonAktifRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'kode_inventaris'  => ['required', 'string', 'max:50', 'exists:pengadaan,kode_inventaris'],
+            'kode_inventaris'  => ['required', 'string', 'max:50', 'exists:aset,kode_inventaris'],
             'id_status'        => ['nullable', 'integer', 'exists:status_barang,id_status'],
             'jumlah_nonaktif'  => ['nullable', 'integer', 'min:1'],
             'tanggal'          => ['required', 'date'],

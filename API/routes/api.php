@@ -479,6 +479,8 @@ Route::middleware('auth:sanctum')->group(function () {
             ->middleware('cek.hak.akses:mutasi,hak_buat');
         Route::get('/{mutasi}', [MutasiController::class, 'show'])
             ->middleware('cek.hak.akses:mutasi,hak_baca');
+        Route::put('/{mutasi}', [MutasiController::class, 'update'])
+            ->middleware('cek.hak.akses:mutasi,hak_ubah');
         Route::delete('/{mutasi}', [MutasiController::class, 'destroy'])
             ->middleware('cek.hak.akses:mutasi,hak_hapus');
     });

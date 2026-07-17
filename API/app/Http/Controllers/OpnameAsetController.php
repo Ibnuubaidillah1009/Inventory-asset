@@ -56,7 +56,7 @@ class OpnameAsetController extends Controller
      */
     public function index(): JsonResponse
     {
-        $data = OpnameAset::with(['pengadaan.aset', 'kondisi'])->get();
+        $data = OpnameAset::with(['aset', 'kondisi'])->get();
 
         return response()->json([
             'status'  => true,
@@ -75,7 +75,7 @@ class OpnameAsetController extends Controller
     public function store(StoreOpnameAsetRequest $request): JsonResponse
     {
         $opname = OpnameAset::create($request->validated());
-        $opname->load(['pengadaan.aset', 'kondisi']);
+        $opname->load(['aset', 'kondisi']);
 
         return response()->json([
             'status'  => true,
@@ -93,7 +93,7 @@ class OpnameAsetController extends Controller
      */
     public function show(int $id): JsonResponse
     {
-        $opname = OpnameAset::with(['pengadaan.aset', 'kondisi'])->find($id);
+        $opname = OpnameAset::with(['aset', 'kondisi'])->find($id);
 
         if (!$opname) {
             return response()->json(['status' => false, 'message' => 'Opname aset tidak ditemukan.'], 404);
@@ -127,7 +127,7 @@ class OpnameAsetController extends Controller
         return response()->json([
             'status'  => true,
             'message' => 'Opname aset berhasil diperbarui.',
-            'data'    => $opname->fresh(['pengadaan.aset', 'kondisi']),
+            'data'    => $opname->fresh(['aset', 'kondisi']),
         ]);
     }
 
