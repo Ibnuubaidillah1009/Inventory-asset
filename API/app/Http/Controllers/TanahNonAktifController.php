@@ -57,8 +57,11 @@ class TanahNonAktifController extends Controller
      */
     public function index(): JsonResponse
     {
-        $data = TanahNonAktif::with(['asetTanah', 'statusBarang'])->get();
-        return response()->json(['status' => true, 'message' => 'Daftar tanah non-aktif berhasil diambil.', 'data' => TanahNonAktifResource::collection($data)]);
+        $data = TanahNonAktif::with(['asetTanah', 'statusBarang'])->paginate(20);
+        return TanahNonAktifResource::collection($data)->additional([
+            'status'  => true,
+            'message' => 'Daftar tanah non-aktif berhasil diambil.',
+        ])->response();
     }
 
     /**

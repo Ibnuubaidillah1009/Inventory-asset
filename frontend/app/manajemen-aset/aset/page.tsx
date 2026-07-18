@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import api from '@/utils/api';
+import { extractData, formatDate } from '@/lib/utils';
 import { Plus, Pencil, Trash2, X, Loader2, Search, Eye } from 'lucide-react';
 
 export default function AsetPage() {
@@ -66,17 +67,17 @@ export default function AsetPage() {
         api.get('/kondisi').catch(() => ({ data: { data: [] } })),
       ]);
 
-      setData(resAset.data.data || []);
+      setData(extractData(resAset.data.data));
       if (resAset.data.meta) {
         setCurrentPage(resAset.data.meta.current_page);
         setLastPage(resAset.data.meta.last_page);
       }
-      setPengadaanList(resPengadaan.data.data || []);
-      setMasterBarangList(resMaster.data.data || []);
-      setJurusanList(resJurusan.data.data || []);
-      setRuangList(resRuang.data.data || []);
-      setLokasiList(resLokasi.data.data || []);
-      setKondisiList(resKondisi.data.data || []);
+      setPengadaanList(extractData(resPengadaan.data.data));
+      setMasterBarangList(extractData(resMaster.data.data));
+      setJurusanList(extractData(resJurusan.data.data));
+      setRuangList(extractData(resRuang.data.data));
+      setLokasiList(extractData(resLokasi.data.data));
+      setKondisiList(extractData(resKondisi.data.data));
     } catch (error) {
       console.error('Gagal mengambil data aset', error);
     } finally {
@@ -246,7 +247,7 @@ export default function AsetPage() {
           <table className="w-full text-sm text-left">
             <thead className="text-xs text-gray-500 bg-gray-50 border-b border-gray-200 uppercase">
               <tr>
-                <th className="px-4 py-3 font-medium">No</th>
+                <th className="px-4 py-3 font-medium">No.</th>
                 <th className="px-4 py-3 font-medium">Kode Inventaris</th>
                 <th className="px-4 py-3 font-medium">Nama Barang</th>
                 <th className="px-4 py-3 font-medium">Kondisi</th>
@@ -273,7 +274,7 @@ export default function AsetPage() {
                 data.map((item, index) => (
                   <tr key={item.kode_barang || index} className="hover:bg-gray-50 transition-colors">
                     <td className="px-4 py-3 text-gray-500">{index + 1}</td>
-                    <td className="px-4 py-3 font-medium text-gray-900">{item.kode_barang || '-'}</td>
+                    <td className="px-4 py-3 font-medium text-gray-900">{item.kode_inventaris || '-'}</td>
                     <td className="px-4 py-3 text-gray-900 font-medium">{item.master_barang?.nama_barang || '-'}</td>
                     <td className="px-4 py-3 text-gray-500">{item.kondisi?.nama_kondisi || '-'}</td>
                     <td className="px-4 py-3 text-gray-500">{item.penanggung_jawab || '-'}</td>
@@ -292,7 +293,7 @@ export default function AsetPage() {
                       <button onClick={() => openDetailModal(item)} className="text-gray-400 hover:text-blue-600 mr-3 transition-colors cursor-pointer" title="Lihat Detail">
                         <Eye className="h-4 w-4" />
                       </button>
-                      <button onClick={() => openModal(item)} className="text-gray-400 hover:text-gray-900 mr-3 transition-colors cursor-pointer" title="Edit">
+                      <button onClick={() => openModal(item)} className="text-gray-400 hover:text-gray-900 mr-3 transition-colors cursor-pointer" title="Ubah">
                         <Pencil className="h-4 w-4" />
                       </button>
                       <button onClick={() => handleDelete(item.kode_barang)} className="text-gray-400 hover:text-red-600 transition-colors cursor-pointer" title="Hapus">
@@ -387,8 +388,8 @@ export default function AsetPage() {
                 <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Garansi</h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {[
-                    ['Tanggal Mulai', selectedItem.tanggal_garansi_mulai],
-                    ['Tanggal Akhir', selectedItem.tanggal_garansi_akhir],
+                    ['Tanggal Mulai', formatDate(selectedItem.tanggal_garansi_mulai)],
+                    ['Tanggal Akhir', formatDate(selectedItem.tanggal_garansi_akhir)],
                     ['Info Garansi', selectedItem.info_garansi],
                   ].map(([label, value]) => (
                     <div key={label}>
@@ -404,10 +405,10 @@ export default function AsetPage() {
                 <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Pemeliharaan & Asuransi</h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {[
-                    ['Jadwal Pemeliharaan Berikutnya', selectedItem.jadwal_pemeliharaan_berikutnya],
+                    ['Jadwal Pemeliharaan Berikutnya', formatDate(selectedItem.jadwal_pemeliharaan_berikutnya)],
                     ['No Polis Asuransi', selectedItem.nomor_polis_asuransi],
                     ['Nilai Pertanggungan', selectedItem.nilai_pertanggungan ? formatRupiah(selectedItem.nilai_pertanggungan) : '-'],
-                    ['Tanggal Akhir Asuransi', selectedItem.tanggal_akhir_asuransi],
+                    ['Tanggal Akhir Asuransi', formatDate(selectedItem.tanggal_akhir_asuransi)],
                   ].map(([label, value]) => (
                     <div key={label}>
                       <label className="block text-xs font-medium text-gray-500 mb-1">{label}</label>

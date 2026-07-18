@@ -57,8 +57,11 @@ class BangunanNonAktifController extends Controller
      */
     public function index(): JsonResponse
     {
-        $data = BangunanNonAktif::with(['asetBangunan', 'statusBarang'])->get();
-        return response()->json(['status' => true, 'message' => 'Daftar bangunan non-aktif berhasil diambil.', 'data' => BangunanNonAktifResource::collection($data)]);
+        $data = BangunanNonAktif::with(['asetBangunan', 'statusBarang'])->paginate(20);
+        return BangunanNonAktifResource::collection($data)->additional([
+            'status'  => true,
+            'message' => 'Daftar bangunan non-aktif berhasil diambil.',
+        ])->response();
     }
 
     /**

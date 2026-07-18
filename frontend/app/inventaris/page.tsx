@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import api from '@/utils/api';
+import { extractData, formatDate } from '@/lib/utils';
 import { Loader2, Archive, ShoppingCart, ClipboardList } from 'lucide-react';
 
 export default function InventarisPage() {
@@ -27,9 +28,9 @@ export default function InventarisPage() {
           api.get('/permintaan').catch(() => ({ data: { data: [] } })),
         ]);
 
-        const asetData = resAset.data.data || [];
-        const pengadaanData = resPengadaan.data.data || [];
-        const permintaanData = resPermintaan.data.data || [];
+        const asetData = extractData(resAset.data.data);
+        const pengadaanData = extractData(resPengadaan.data.data);
+        const permintaanData = extractData(resPermintaan.data.data);
 
         setStats({
           totalAset: asetData.length,
@@ -102,7 +103,7 @@ export default function InventarisPage() {
               <table className="w-full text-sm text-left">
                 <thead className="text-xs text-gray-500 bg-gray-50 border-b border-gray-200 uppercase">
                   <tr>
-                    <th className="px-6 py-3 font-medium">No</th>
+                    <th className="px-6 py-3 font-medium">No.</th>
                     <th className="px-6 py-3 font-medium">Kode Barang</th>
                     <th className="px-6 py-3 font-medium">Nama Barang</th>
                     <th className="px-6 py-3 font-medium">Status</th>
@@ -150,7 +151,7 @@ export default function InventarisPage() {
               <table className="w-full text-sm text-left">
                 <thead className="text-xs text-gray-500 bg-gray-50 border-b border-gray-200 uppercase">
                   <tr>
-                    <th className="px-6 py-3 font-medium">No</th>
+                    <th className="px-6 py-3 font-medium">No.</th>
                     <th className="px-6 py-3 font-medium">ID Pengadaan</th>
                     <th className="px-6 py-3 font-medium">Tanggal</th>
                     <th className="px-6 py-3 font-medium">Status</th>
@@ -169,7 +170,7 @@ export default function InventarisPage() {
                         <td className="px-6 py-3 text-gray-500">{index + 1}</td>
                         <td className="px-6 py-3 font-medium text-gray-900">#{item.id_pengadaan}</td>
                         <td className="px-6 py-3 text-gray-500">
-                          {item.tanggal_pengadaan || '-'}
+                          {formatDate(item.tanggal_pengadaan)}
                         </td>
                         <td className="px-6 py-3">
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium uppercase tracking-wider ${

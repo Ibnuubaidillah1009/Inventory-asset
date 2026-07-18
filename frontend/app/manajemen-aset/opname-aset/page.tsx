@@ -1,5 +1,7 @@
 'use client';
 
+import { extractData } from '@/lib/utils';
+
 import { useState, useEffect } from 'react';
 import api from '@/utils/api';
 import { Plus, Pencil, Trash2, X, Loader2, Search, Eye } from 'lucide-react';
@@ -37,13 +39,13 @@ export default function OpnameAsetPage() {
         api.get('/pengguna').catch(() => ({ data: { data: [] } }))
       ]);
 
-      setData(resOpname.data.data || []);
+      setData(extractData(resOpname.data.data));
       if (resOpname.data.meta) {
         setCurrentPage(resOpname.data.meta.current_page);
         setLastPage(resOpname.data.meta.last_page);
       }
-      setAsetList(resAset.data.data || []);
-      setPenggunaList(resPengguna.data.data || resPengguna.data || []);
+      setAsetList(extractData(resAset.data.data));
+      setPenggunaList(extractData(resPengguna.data.data) || resPengguna.data || []);
     } catch (error) {
       console.error('Gagal mengambil data opname aset', error);
     } finally {
@@ -181,7 +183,7 @@ export default function OpnameAsetPage() {
           <table className="w-full text-sm text-left">
             <thead className="text-xs text-gray-500 bg-gray-50 border-b border-gray-200 uppercase">
               <tr>
-                <th className="px-6 py-4 font-medium">No</th>
+                <th className="px-6 py-4 font-medium">No.</th>
                 <th className="px-6 py-4 font-medium">ID Opname</th>
                 <th className="px-6 py-4 font-medium">Kode Barang</th>
                 <th className="px-6 py-4 font-medium">Tanggal</th>
@@ -216,7 +218,7 @@ export default function OpnameAsetPage() {
                       <button onClick={() => openDetailModal(item)} className="text-gray-400 hover:text-blue-600 mr-3 transition-colors cursor-pointer" title="Lihat Detail">
                         <Eye className="h-4 w-4" />
                       </button>
-                      <button onClick={() => openModal(item)} className="text-gray-400 hover:text-gray-900 mr-3 transition-colors cursor-pointer" title="Edit">
+                      <button onClick={() => openModal(item)} className="text-gray-400 hover:text-gray-900 mr-3 transition-colors cursor-pointer" title="Ubah">
                         <Pencil className="h-4 w-4" />
                       </button>
                       <button onClick={() => handleDelete(item.id_opname_aset || item.id)} className="text-gray-400 hover:text-red-600 transition-colors cursor-pointer" title="Hapus">

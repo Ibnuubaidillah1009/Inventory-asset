@@ -26,6 +26,7 @@ class UpdatePengaturanRequest extends FormRequest
             'kepala_sekolah'     => ['nullable', 'string', 'max:255'],
             'NIP'                => ['nullable', 'string', 'max:50'],
             'bagian_inventaris'  => ['nullable', 'string', 'max:255'],
+            'kode_inventaris_prefix' => ['nullable', 'string', 'max:10'],
         ];
     }
 

@@ -1,5 +1,7 @@
 'use client';
 
+import { extractData } from '@/lib/utils';
+
 import { useState, useEffect } from 'react';
 import api from '@/utils/api';
 import { Plus, Pencil, Trash2, X, Loader2, Search, Eye } from 'lucide-react';
@@ -31,12 +33,12 @@ export default function RuangPage() {
         api.get('/lokasi').catch(() => ({ data: { data: [] } }))
       ]);
 
-      setData(resRuang.data.data || []);
+      setData(extractData(resRuang.data.data));
       if (resRuang.data.meta) {
         setCurrentPage(resRuang.data.meta.current_page);
         setLastPage(resRuang.data.meta.last_page);
       }
-      setLokasiList(resLokasi.data.data || []);
+      setLokasiList(extractData(resLokasi.data.data));
     } catch (error) {
       console.error('Gagal mengambil data ruang', error);
     } finally {
@@ -152,7 +154,7 @@ export default function RuangPage() {
           <table className="w-full text-sm text-left">
             <thead className="text-xs text-gray-500 bg-gray-50 border-b border-gray-200 uppercase">
               <tr>
-                <th className="px-6 py-4 font-medium">No</th>
+                <th className="px-6 py-4 font-medium">No.</th>
                 <th className="px-6 py-4 font-medium">ID Ruang</th>
                 <th className="px-6 py-4 font-medium">Nama Ruang</th>
                 <th className="px-6 py-4 font-medium">Lokasi</th>
@@ -183,7 +185,7 @@ export default function RuangPage() {
                       <button onClick={() => openDetailModal(item)} className="text-gray-400 hover:text-blue-600 mr-3 transition-colors cursor-pointer" title="Lihat Detail">
                         <Eye className="h-4 w-4" />
                       </button>
-                      <button onClick={() => openModal(item)} className="text-gray-400 hover:text-gray-900 mr-3 transition-colors cursor-pointer" title="Edit">
+                      <button onClick={() => openModal(item)} className="text-gray-400 hover:text-gray-900 mr-3 transition-colors cursor-pointer" title="Ubah">
                         <Pencil className="h-4 w-4" />
                       </button>
                       <button onClick={() => handleDelete(item.id_ruang || item.id)} className="text-gray-400 hover:text-red-600 transition-colors cursor-pointer" title="Hapus">

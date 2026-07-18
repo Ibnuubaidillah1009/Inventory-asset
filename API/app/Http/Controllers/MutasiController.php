@@ -57,13 +57,12 @@ class MutasiController extends Controller
      */
     public function index(): JsonResponse
     {
-        $data = Mutasi::with(['jurusanAsal', 'jurusanTujuan'])->get();
+        $data = Mutasi::with(['jurusanAsal', 'jurusanTujuan'])->paginate(20);
 
-        return response()->json([
+        return MutasiResource::collection($data)->additional([
             'status'  => true,
             'message' => 'Daftar mutasi aset berhasil diambil.',
-            'data'    => MutasiResource::collection($data),
-        ]);
+        ])->response();
     }
 
     /**

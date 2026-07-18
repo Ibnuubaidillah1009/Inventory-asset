@@ -50,8 +50,11 @@ class PenghapusanAsetController extends Controller
      */
     public function index(): JsonResponse
     {
-        $data = PenghapusanAset::with(['aset.masterBarang', 'penyetuju'])->orderByDesc('id_penghapusan')->get();
-        return response()->json(['status' => true, 'message' => 'Daftar penghapusan aset berhasil diambil.', 'data' => PenghapusanAsetResource::collection($data)]);
+        $data = PenghapusanAset::with(['aset.masterBarang', 'penyetuju'])->orderByDesc('id_penghapusan')->paginate(20);
+        return PenghapusanAsetResource::collection($data)->additional([
+            'status'  => true,
+            'message' => 'Daftar penghapusan aset berhasil diambil.',
+        ])->response();
     }
 
     /**

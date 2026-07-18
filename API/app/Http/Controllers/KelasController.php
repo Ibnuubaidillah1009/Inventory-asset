@@ -87,13 +87,12 @@ class KelasController extends Controller
      */
     public function index(): JsonResponse
     {
-        $kelas = Kelas::with('rombel.jurusan')->get();
+        $kelas = Kelas::with('rombel.jurusan')->paginate(20);
 
-        return response()->json([
+        return KelasResource::collection($kelas)->additional([
             'status'  => true,
             'message' => 'Daftar kelas berhasil diambil.',
-            'data'    => KelasResource::collection($kelas),
-        ]);
+        ])->response();
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\TahunAjaran;
+use App\Http\Resources\TahunAjaranResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
@@ -11,11 +12,10 @@ class TahunAjaranController extends Controller
     public function index(): JsonResponse
     {
         $data = TahunAjaran::paginate(20);
-        return response()->json([
-            'status' => true,
+        return TahunAjaranResource::collection($data)->additional([
+            'status'  => true,
             'message' => 'Daftar tahun ajaran berhasil diambil.',
-            'data' => $data
-        ]);
+        ])->response();
     }
 
     public function store(Request $request): JsonResponse

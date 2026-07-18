@@ -44,11 +44,11 @@ class UnitController extends Controller
      */
     public function index(): JsonResponse
     {
-        return response()->json([
+        $data = Unit::paginate(20);
+        return UnitResource::collection($data)->additional([
             'status'  => true,
             'message' => 'Daftar unit berhasil diambil.',
-            'data'    => UnitResource::collection(Unit::all()),
-        ]);
+        ])->response();
     }
 
     /**

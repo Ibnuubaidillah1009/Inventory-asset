@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import api from '@/utils/api';
+import { extractData, formatDate } from '@/lib/utils';
 import { Plus, Pencil, Trash2, X, Loader2, Search, Eye } from 'lucide-react';
 
 export default function PengadaanBarangPage() {
@@ -44,10 +45,10 @@ export default function PengadaanBarangPage() {
         api.get('/pemasok').catch(() => ({ data: { data: [] } })),
       ]);
 
-      setData(resPengadaan.data.data || []);
-      setMasterBarangList(resMaster.data.data || []);
-      setGudangList(resGudang.data.data || []);
-      setPemasokList(resPemasok.data.data || []);
+      setData(extractData(resPengadaan.data.data));
+      setMasterBarangList(extractData(resMaster.data.data));
+      setGudangList(extractData(resGudang.data.data));
+      setPemasokList(extractData(resPemasok.data.data));
     } catch (error) {
       console.error('Gagal mengambil data pengadaan', error);
     } finally {
@@ -80,9 +81,10 @@ export default function PengadaanBarangPage() {
   const openModal = (item: any = null) => {
     if (item) {
       setEditingId(item.id_pengadaan);
+      const matchedPem = pemasokList.find((p: any) => (p.id_pemasok || p.id) == item.id_pemasok);
       setFormData({
         tanggal_pengadaan: item.tanggal_pengadaan || '',
-        id_pemasok: item.id_pemasok || '',
+        id_pemasok: matchedPem ? String(matchedPem.id_pemasok || matchedPem.id) : (item.id_pemasok || ''),
         total_harga: item.total_harga || '',
         keterangan: item.keterangan || '',
         kode_gudang: item.kode_gudang || '',
@@ -156,9 +158,12 @@ export default function PengadaanBarangPage() {
         return;
       }
 
+      const matchedPemasok = pemasokList.find((p: any) => (p.id_pemasok || p.id) == formData.id_pemasok);
+      const pemasokId = matchedPemasok ? (matchedPemasok.id_pemasok || matchedPemasok.id) : (formData.id_pemasok ? Number(formData.id_pemasok) : null);
+
       const payload = {
         tanggal_pengadaan: formData.tanggal_pengadaan,
-        id_pemasok: formData.id_pemasok ? Number(formData.id_pemasok) : null,
+        id_pemasok: pemasokId,
         total_harga: formData.total_harga ? Number(formData.total_harga) : null,
         keterangan: formData.keterangan || null,
         kode_gudang: formData.kode_gudang || null,
@@ -243,7 +248,7 @@ export default function PengadaanBarangPage() {
           <table className="w-full text-sm text-left">
             <thead className="text-xs text-gray-500 bg-gray-50 border-b border-gray-200 uppercase">
               <tr>
-                <th className="px-6 py-4 font-medium">No</th>
+                <th className="px-6 py-4 font-medium">No.</th>
                 <th className="px-6 py-4 font-medium">ID Pengadaan</th>
                 <th className="px-6 py-4 font-medium">Tanggal</th>
                 <th className="px-6 py-4 font-medium">Jumlah</th>
@@ -270,7 +275,7 @@ export default function PengadaanBarangPage() {
                   <tr key={item.id_pengadaan || index} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4 text-gray-500">{index + 1}</td>
                     <td className="px-6 py-4 font-medium text-gray-900">#{item.id_pengadaan}</td>
-                    <td className="px-6 py-4 text-gray-500">{item.tanggal_pengadaan || '-'}</td>
+                    <td className="px-6 py-4 text-gray-500">{formatDate(item.tanggal_pengadaan)}</td>
                     <td className="px-6 py-4 text-gray-500">{item.jumlah_pengadaan || '-'} item</td>
                     <td className="px-6 py-4 text-gray-900">{formatRupiah(item.total_harga || 0)}</td>
                     <td className="px-6 py-4">
@@ -286,7 +291,7 @@ export default function PengadaanBarangPage() {
                       <button onClick={() => openDetailModal(item)} className="text-gray-400 hover:text-blue-600 mr-3 transition-colors cursor-pointer" title="Lihat Detail">
                         <Eye className="h-4 w-4" />
                       </button>
-                      <button onClick={() => openModal(item)} className="text-gray-400 hover:text-gray-900 mr-3 transition-colors cursor-pointer" title="Edit">
+                      <button onClick={() => openModal(item)} className="text-gray-400 hover:text-gray-900 mr-3 transition-colors cursor-pointer" title="Ubah">
                         <Pencil className="h-4 w-4" />
                       </button>
                       <button onClick={() => handleDelete(item.id_pengadaan)} className="text-gray-400 hover:text-red-600 transition-colors cursor-pointer" title="Hapus">
@@ -314,7 +319,7 @@ export default function PengadaanBarangPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">Tanggal Pengadaan</label>
-                  <div className="text-gray-900 font-medium bg-gray-50 p-2 rounded-md border border-gray-100">{selectedItem.tanggal_pengadaan || '-'}</div>
+                  <div className="text-gray-900 font-medium bg-gray-50 p-2 rounded-md border border-gray-100">{formatDate(selectedItem.tanggal_pengadaan)}</div>
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">Status</label>
@@ -436,18 +441,27 @@ export default function PengadaanBarangPage() {
                   </div>
                   <div>
                     <label className="block font-medium text-gray-700 mb-1">Pemasok</label>
-                    <select
-                      value={formData.id_pemasok}
-                      onChange={(e) => setFormData({ ...formData, id_pemasok: e.target.value })}
+                    <input
+                      type="text"
+                      value={pemasokList.find((p: any) => (p.id_pemasok || p.id) == formData.id_pemasok)?.nama_pemasok || formData.id_pemasok}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setFormData({ ...formData, id_pemasok: val });
+                      }}
+                      onFocus={(e) => e.target.select()}
                       className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900 bg-white"
-                    >
-                      <option value="">Pilih Pemasok</option>
+                      placeholder="Ketik nama pemasok..."
+                      list="pemasok-list-pengadaan"
+                      autoComplete="off"
+                    />
+                    <datalist id="pemasok-list-pengadaan">
                       {pemasokList.map((p: any) => (
-                        <option key={p.id_pemasok || p.id} value={p.id_pemasok || p.id}>
-                          {p.nama_pemasok || p.nama}
-                        </option>
+                        <option key={p.id_pemasok || p.id} value={p.nama_pemasok || p.nama} data-id={p.id_pemasok || p.id} />
                       ))}
-                    </select>
+                    </datalist>
+                    {formData.id_pemasok && pemasokList.find((p: any) => (p.id_pemasok || p.id) == formData.id_pemasok) && (
+                      <button type="button" onClick={() => setFormData({ ...formData, id_pemasok: '' })} className="text-xs text-gray-400 hover:text-red-500 mt-1 cursor-pointer">Hapus pilihan</button>
+                    )}
                   </div>
                   <div>
                     <label className="block font-medium text-gray-700 mb-1">Total Harga (Rp)</label>

@@ -7,6 +7,7 @@ use App\Http\Resources\KerusakanResource;
 use App\Models\Aset;
 use App\Models\Kerusakan;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -107,13 +108,12 @@ class KerusakanController extends Controller
             'aset.masterBarang',
             'pelapor',
             'perbaikan',
-        ])->orderByDesc('id_kerusakan')->get();
+        ])->orderByDesc('id_kerusakan')->paginate(20);
 
-        return response()->json([
+        return KerusakanResource::collection($data)->additional([
             'status'  => true,
             'message' => 'Daftar kerusakan berhasil diambil.',
-            'data'    => KerusakanResource::collection($data),
-        ]);
+        ])->response();
     }
 
     /**
@@ -231,6 +231,30 @@ class KerusakanController extends Controller
         return response()->json([
             'status'  => true,
             'message' => 'Detail kerusakan berhasil diambil.',
+            'data'    => new KerusakanResource($kerusakan),
+        ]);
+    }
+
+    public function update(Request $request, string $id): JsonResponse
+    {
+        $kerusakan = Kerusakan::find($id);
+
+        if (!$kerusakan) {
+            return response()->json(['status' => false, 'message' => 'Kerusakan tidak ditemukan.'], 404);
+        }
+
+        $validated = $request->validate([
+            'status_kerusakan' => 'sometimes|string',
+            'deskripsi_kerusakan' => 'sometimes|string',
+            'tingkat_kerusakan' => 'sometimes|string',
+        ]);
+
+        $kerusakan->update($validated);
+        $kerusakan->load(['aset.masterBarang', 'pelapor']);
+
+        return response()->json([
+            'status'  => true,
+            'message' => 'Kerusakan berhasil diperbarui.',
             'data'    => new KerusakanResource($kerusakan),
         ]);
     }

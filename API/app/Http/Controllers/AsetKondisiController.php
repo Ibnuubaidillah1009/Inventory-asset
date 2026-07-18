@@ -86,12 +86,11 @@ class AsetKondisiController extends Controller
      */
     public function index(): JsonResponse
     {
-        $kondisi = Kondisi::all();
-        return response()->json([
+        $kondisi = Kondisi::paginate(20);
+        return KondisiResource::collection($kondisi)->additional([
             'status'  => true,
             'message' => 'Daftar kondisi berhasil diambil.',
-            'data'    => KondisiResource::collection($kondisi),
-        ]);
+        ])->response();
     }
 
     /**

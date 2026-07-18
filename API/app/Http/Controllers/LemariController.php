@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Lemari;
+use App\Http\Resources\LemariResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
@@ -10,12 +11,11 @@ class LemariController extends Controller
 {
     public function index(): JsonResponse
     {
-        $data = Lemari::with('ruang')->get();
-        return response()->json([
-            'status' => true,
+        $data = Lemari::with('ruang')->paginate(20);
+        return LemariResource::collection($data)->additional([
+            'status'  => true,
             'message' => 'Daftar lemari berhasil diambil.',
-            'data' => $data
-        ]);
+        ])->response();
     }
 
     public function store(Request $request): JsonResponse

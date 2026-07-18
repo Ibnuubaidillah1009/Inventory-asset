@@ -86,12 +86,11 @@ class AsetStatusController extends Controller
      */
     public function index(): JsonResponse
     {
-        $status = StatusBarang::all();
-        return response()->json([
+        $status = StatusBarang::paginate(20);
+        return StatusBarangResource::collection($status)->additional([
             'status'  => true,
             'message' => 'Daftar status barang berhasil diambil.',
-            'data'    => StatusBarangResource::collection($status),
-        ]);
+        ])->response();
     }
 
     /**

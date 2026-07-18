@@ -60,8 +60,11 @@ class AsetHabisPakaiController extends Controller
      */
     public function index(): JsonResponse
     {
-        $data = AsetHabisPakai::with(['satuan'])->get();
-        return response()->json(['status' => true, 'message' => 'Daftar aset habis pakai berhasil diambil.', 'data' => AsetHabisPakaiResource::collection($data)]);
+        $data = AsetHabisPakai::with(['masterBarang.satuan', 'kondisi'])->paginate(20);
+        return AsetHabisPakaiResource::collection($data)->additional([
+            'status'  => true,
+            'message' => 'Daftar aset habis pakai berhasil diambil.',
+        ])->response();
     }
 
     /**
@@ -74,7 +77,7 @@ class AsetHabisPakaiController extends Controller
     public function store(StoreAsetHabisPakaiRequest $request): JsonResponse
     {
         $item = AsetHabisPakai::create($request->validated());
-        $item->load(['satuan']);
+        $item->load(['masterBarang.satuan', 'kondisi']);
         return response()->json(['status' => true, 'message' => 'Aset habis pakai berhasil ditambahkan.', 'data' => new AsetHabisPakaiResource($item)], 201);
     }
 
@@ -87,7 +90,7 @@ class AsetHabisPakaiController extends Controller
      */
     public function show(string $id): JsonResponse
     {
-        $item = AsetHabisPakai::with(['satuan'])->find($id);
+        $item = AsetHabisPakai::with(['masterBarang.satuan', 'kondisi'])->find($id);
         if (!$item) return response()->json(['status' => false, 'message' => 'Aset habis pakai tidak ditemukan.'], 404);
         return response()->json(['status' => true, 'message' => 'Detail aset habis pakai berhasil diambil.', 'data' => new AsetHabisPakaiResource($item)]);
     }
@@ -106,15 +109,16 @@ class AsetHabisPakaiController extends Controller
         if (!$item) return response()->json(['status' => false, 'message' => 'Aset habis pakai tidak ditemukan.'], 404);
 
         $validated = $request->validate([
-            'nama_barang'  => 'sometimes|string|max:150',
-            'id_satuan'    => 'nullable|integer|exists:satuan,id_satuan',
-            'stok_minimal' => 'nullable|integer|min:0',
-            'keterangan'   => 'nullable|string',
-            'gambar'       => 'nullable|string|max:255',
+            'id_master_barang' => 'nullable|integer|exists:master_barang,id_master_barang',
+            'stok'            => 'sometimes|integer|min:0',
+            'id_kondisi'      => 'nullable|integer|exists:kondisi,id_kondisi',
+            'status'          => 'nullable|string|max:50',
+            'keterangan'      => 'nullable|string',
+            'is_returnable'   => 'nullable|boolean',
         ]);
 
         $item->update($validated);
-        return response()->json(['status' => true, 'message' => 'Aset habis pakai berhasil diperbarui.', 'data' => new AsetHabisPakaiResource($item->fresh(['satuan']))]);
+        return response()->json(['status' => true, 'message' => 'Aset habis pakai berhasil diperbarui.', 'data' => new AsetHabisPakaiResource($item->fresh(['masterBarang.satuan', 'kondisi']))]);
     }
 
     /**

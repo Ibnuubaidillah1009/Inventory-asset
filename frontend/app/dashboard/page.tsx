@@ -127,7 +127,7 @@ export default function DashboardPage() {
           .map((p: any, index: number) => ({
             id: `pinjam-${p.id_peminjaman || p.id || index}`,
             type: "Peminjaman",
-            description: `${p.nama_peminjam || "User"} meminjam barang`,
+            description: `${p.nama_peminjam || "Pengguna"} meminjam barang`,
             date: p.tanggal_peminjaman || p.created_at,
             status: p.status || "Aktif",
           }));
@@ -183,7 +183,7 @@ export default function DashboardPage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">
-          Dashboard
+          Dasbor
         </h1>
         <p className="text-sm text-gray-500 mt-1">
           Ringkasan sistem manajemen inventaris sekolah.
@@ -301,7 +301,7 @@ export default function DashboardPage() {
                       <span className="text-sm font-medium">{status.status}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-gray-500">{status.count} item</span>
+                      <span className="text-sm text-gray-500">{status.count} barang</span>
                       <Badge variant="secondary">{status.percentage}%</Badge>
                     </div>
                   </div>

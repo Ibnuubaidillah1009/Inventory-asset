@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import api from '@/utils/api';
 import { Plus, Pencil, Trash2, X, Loader2, Search, ClipboardCheck } from 'lucide-react';
+import { extractData, formatDate } from '@/lib/utils';
 
 export default function ProsesOpnamePage() {
   const [data, setData] = useState<any[]>([]);
@@ -30,9 +31,9 @@ export default function ProsesOpnamePage() {
         api.get('/aset').catch(() => ({ data: { data: [] } })),
         api.get('/kondisi').catch(() => ({ data: { data: [] } })),
       ]);
-      setData(resOpname.data.data || []);
-      setAsetList(resAset.data.data || []);
-      setKondisiList(resKondisi.data.data || []);
+      setData(extractData(resOpname.data.data));
+      setAsetList(extractData(resAset.data.data));
+      setKondisiList(extractData(resKondisi.data.data));
     } catch (error) {
       console.error('Gagal mengambil data opname', error);
     } finally {
@@ -124,7 +125,7 @@ export default function ProsesOpnamePage() {
           <table className="w-full text-sm text-left">
             <thead className="text-xs text-gray-500 bg-gray-50 border-b border-gray-200 uppercase">
               <tr>
-                <th className="px-6 py-4 font-medium">No</th>
+                <th className="px-6 py-4 font-medium">No.</th>
                 <th className="px-6 py-4 font-medium">Kode Inventaris</th>
                 <th className="px-6 py-4 font-medium">Tanggal Opname</th>
                 <th className="px-6 py-4 font-medium">Kondisi</th>
@@ -141,11 +142,11 @@ export default function ProsesOpnamePage() {
                 <tr key={item.id_opname_aset || i} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-4 text-gray-500">{i + 1}</td>
                   <td className="px-6 py-4 font-medium text-gray-900">{item.kode_inventaris || '-'}</td>
-                  <td className="px-6 py-4 text-gray-900">{item.tanggal_opname || '-'}</td>
+                  <td className="px-6 py-4 text-gray-900">{formatDate(item.tanggal_opname)}</td>
                   <td className="px-6 py-4 text-gray-500">{item.kondisi?.nama_kondisi || '-'}</td>
                   <td className="px-6 py-4 text-gray-500 max-w-xs truncate">{item.keterangan || '-'}</td>
                   <td className="px-6 py-4 text-right">
-                    <button onClick={() => openModal(item)} className="text-gray-400 hover:text-gray-900 mr-3 cursor-pointer" title="Edit"><Pencil className="h-4 w-4" /></button>
+                    <button onClick={() => openModal(item)} className="text-gray-400 hover:text-gray-900 mr-3 cursor-pointer" title="Ubah"><Pencil className="h-4 w-4" /></button>
                     <button onClick={() => handleDelete(item.id_opname_aset)} className="text-gray-400 hover:text-red-600 cursor-pointer" title="Hapus"><Trash2 className="h-4 w-4" /></button>
                   </td>
                 </tr>

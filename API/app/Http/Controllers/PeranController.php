@@ -55,7 +55,10 @@ class PeranController extends Controller
     public function index(): JsonResponse
     {
         $peran = Peran::with('aksesList')->paginate(20);
-        return response()->json(['status' => true, 'message' => 'Daftar peran berhasil diambil.', 'data' => PeranResource::collection($peran)]);
+        return PeranResource::collection($peran)->additional([
+            'status'  => true,
+            'message' => 'Daftar peran berhasil diambil.',
+        ])->response();
     }
 
     /**

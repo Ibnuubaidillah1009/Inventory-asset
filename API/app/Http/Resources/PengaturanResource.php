@@ -22,6 +22,7 @@ class PengaturanResource extends JsonResource
             'kepala_sekolah'     => $this->kepala_sekolah,
             'NIP'                => $this->NIP,
             'bagian_inventaris'  => $this->bagian_inventaris,
+            'kode_inventaris_prefix' => $this->kode_inventaris_prefix,
         ];
     }
 }

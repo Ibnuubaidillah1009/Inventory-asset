@@ -113,6 +113,30 @@ class DatabaseController extends Controller
      *     @OA\Response(response=422, description="Validasi gagal")
      * )
      */
+    public function testConnection(Request $request)
+    {
+        $request->validate([
+            'DB_HOST' => 'required',
+            'DB_PORT' => 'required',
+            'DB_DATABASE' => 'required',
+            'DB_USERNAME' => 'required',
+            'DB_PASSWORD' => 'nullable',
+        ]);
+
+        try {
+            $pdo = new \PDO(
+                "mysql:host={$request->DB_HOST};port={$request->DB_PORT};dbname={$request->DB_DATABASE}",
+                $request->DB_USERNAME,
+                $request->DB_PASSWORD ?? '',
+                [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION]
+            );
+            $pdo = null;
+            return response()->json(['message' => 'Koneksi database berhasil.']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Koneksi gagal: ' . $e->getMessage()], 500);
+        }
+    }
+
     public function changeConnection(Request $request)
     {
         $request->validate([

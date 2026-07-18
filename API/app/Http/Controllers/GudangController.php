@@ -89,11 +89,11 @@ class GudangController extends Controller
      */
     public function index(): JsonResponse
     {
-        return response()->json([
+        $data = Gudang::paginate(20);
+        return GudangResource::collection($data)->additional([
             'status'  => true,
             'message' => 'Daftar gudang berhasil diambil.',
-            'data'    => GudangResource::collection(Gudang::all()),
-        ]);
+        ])->response();
     }
 
     /**

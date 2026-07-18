@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import api from '@/utils/api';
 import { Plus, X, Loader2, Search, ArrowRightLeft, Pencil, Trash2 } from 'lucide-react';
+import { extractData, formatDate } from '@/lib/utils';
 
 interface MutasiItem {
   id_mutasi: number;
@@ -44,9 +45,9 @@ export default function MutasiBarangPage() {
         api.get('/aset').catch(() => ({ data: { data: [] } })),
         api.get('/jurusan').catch(() => ({ data: { data: [] } })),
       ]);
-      setData(resMutasi.data.data || []);
-      setAsetList(resAset.data.data || []);
-      setJurusanList(resJurusan.data.data || []);
+      setData(extractData(resMutasi.data.data));
+      setAsetList(extractData(resAset.data.data));
+      setJurusanList(extractData(resJurusan.data.data));
     } catch (error) {
       console.error('Gagal mengambil data mutasi', error);
     } finally {
@@ -151,7 +152,7 @@ export default function MutasiBarangPage() {
           <table className="w-full text-sm text-left">
             <thead className="text-xs text-gray-500 bg-gray-50 border-b border-gray-200 uppercase">
               <tr>
-                <th className="px-6 py-4 font-medium">No</th>
+                <th className="px-6 py-4 font-medium">No.</th>
                 <th className="px-6 py-4 font-medium">Kode Inventaris</th>
                 <th className="px-6 py-4 font-medium">Jurusan Asal</th>
                 <th className="px-6 py-4 font-medium">Jurusan Tujuan</th>
@@ -171,14 +172,14 @@ export default function MutasiBarangPage() {
                   <td className="px-6 py-4 font-medium text-gray-900">{item.kode_inventaris || '-'}</td>
                   <td className="px-6 py-4 text-gray-500">{item.jurusan_asal?.nama_jurusan || '-'}</td>
                   <td className="px-6 py-4 text-gray-900 font-medium">{item.jurusan_tujuan?.nama_jurusan || '-'}</td>
-                  <td className="px-6 py-4 text-gray-500">{item.tanggal_mutasi || '-'}</td>
+                  <td className="px-6 py-4 text-gray-500">{formatDate(item.tanggal_mutasi)}</td>
                   <td className="px-6 py-4 text-gray-500 max-w-xs truncate">{item.alasan_mutasi || '-'}</td>
                   <td className="px-6 py-4">
                     <div className="flex items-center justify-center gap-2">
-                      <button onClick={() => openDetailModal(item)} title="Detail" className="p-1.5 rounded-md text-gray-400 hover:text-gray-900 hover:bg-gray-100 transition-colors cursor-pointer">
+                      <button onClick={() => openDetailModal(item)} title="Rincian" className="p-1.5 rounded-md text-gray-400 hover:text-gray-900 hover:bg-gray-100 transition-colors cursor-pointer">
                         <Search className="h-4 w-4" />
                       </button>
-                      <button onClick={() => openEditModal(item)} title="Edit" className="p-1.5 rounded-md text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer">
+                      <button onClick={() => openEditModal(item)} title="Ubah" className="p-1.5 rounded-md text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer">
                         <Pencil className="h-4 w-4" />
                       </button>
                       <button onClick={() => handleDelete(item)} title="Hapus" className="p-1.5 rounded-md text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer">
@@ -254,7 +255,7 @@ export default function MutasiBarangPage() {
                 ['Kode Inventaris', detailItem.kode_inventaris],
                 ['Jurusan Asal', detailItem.jurusan_asal?.nama_jurusan || '-'],
                 ['Jurusan Tujuan', detailItem.jurusan_tujuan?.nama_jurusan || '-'],
-                ['Tanggal Mutasi', detailItem.tanggal_mutasi],
+                ['Tanggal Mutasi', formatDate(detailItem.tanggal_mutasi)],
                 ['Alasan Mutasi', detailItem.alasan_mutasi || '-'],
               ].map(([label, value]) => (
                 <div key={String(label)} className="flex gap-3">

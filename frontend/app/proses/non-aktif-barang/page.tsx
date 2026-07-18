@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import api from '@/utils/api';
 import { Plus, Pencil, Trash2, X, Loader2, Search, Ban } from 'lucide-react';
+import { extractData, formatDate } from '@/lib/utils';
 
 export default function NonAktifBarangPage() {
   const [data, setData] = useState<any[]>([]);
@@ -31,9 +32,9 @@ export default function NonAktifBarangPage() {
         api.get('/aset').catch(() => ({ data: { data: [] } })),
         api.get('/aset-status').catch(() => ({ data: { data: [] } })),
       ]);
-      setData(resNonAktif.data.data || []);
-      setAsetList(resAset.data.data || []);
-      setStatusList(resStatus.data.data || []);
+      setData(extractData(resNonAktif.data.data));
+      setAsetList(extractData(resAset.data.data));
+      setStatusList(extractData(resStatus.data.data));
     } catch (error) {
       console.error('Gagal mengambil data', error);
     } finally {
@@ -125,7 +126,7 @@ export default function NonAktifBarangPage() {
           <table className="w-full text-sm text-left">
             <thead className="text-xs text-gray-500 bg-gray-50 border-b border-gray-200 uppercase">
               <tr>
-                <th className="px-6 py-4 font-medium">No</th>
+                <th className="px-6 py-4 font-medium">No.</th>
                 <th className="px-6 py-4 font-medium">Kode Inventaris</th>
                 <th className="px-6 py-4 font-medium">Status</th>
                 <th className="px-6 py-4 font-medium">Jumlah</th>
@@ -145,10 +146,10 @@ export default function NonAktifBarangPage() {
                   <td className="px-6 py-4 font-medium text-gray-900">{item.kode_inventaris || '-'}</td>
                   <td className="px-6 py-4 text-gray-500">{item.status_barang?.nama_status || '-'}</td>
                   <td className="px-6 py-4 text-gray-500">{item.jumlah_nonaktif || 1}</td>
-                  <td className="px-6 py-4 text-gray-500">{item.tanggal || '-'}</td>
+                  <td className="px-6 py-4 text-gray-500">{formatDate(item.tanggal)}</td>
                   <td className="px-6 py-4 text-gray-500 max-w-xs truncate">{item.keterangan || '-'}</td>
                   <td className="px-6 py-4 text-right">
-                    <button onClick={() => openModal(item)} className="text-gray-400 hover:text-gray-900 mr-3 cursor-pointer" title="Edit"><Pencil className="h-4 w-4" /></button>
+                    <button onClick={() => openModal(item)} className="text-gray-400 hover:text-gray-900 mr-3 cursor-pointer" title="Ubah"><Pencil className="h-4 w-4" /></button>
                     <button onClick={() => handleDelete(item.id_barang_non_aktif)} className="text-gray-400 hover:text-red-600 cursor-pointer" title="Hapus"><Trash2 className="h-4 w-4" /></button>
                   </td>
                 </tr>

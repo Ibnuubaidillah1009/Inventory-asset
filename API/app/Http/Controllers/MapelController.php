@@ -81,11 +81,11 @@ class MapelController extends Controller
      */
     public function index(): JsonResponse
     {
-        return response()->json([
+        $data = Mapel::paginate(20);
+        return MapelResource::collection($data)->additional([
             'status'  => true,
             'message' => 'Daftar mapel berhasil diambil.',
-            'data'    => MapelResource::collection(Mapel::all()),
-        ]);
+        ])->response();
     }
 
     /**

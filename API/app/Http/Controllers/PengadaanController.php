@@ -30,16 +30,10 @@ class PengadaanController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(15);
 
-        return response()->json([
+        return PengadaanResource::collection($data)->additional([
             'status'  => true,
             'message' => 'Daftar pengadaan berhasil diambil.',
-            'data'    => PengadaanResource::collection($data),
-            'meta'    => [
-                'current_page' => $data->currentPage(),
-                'last_page'    => $data->lastPage(),
-                'total'        => $data->total(),
-            ],
-        ]);
+        ])->response();
     }
 
     public function store(StorePengadaanRequest $request): JsonResponse
@@ -217,10 +211,18 @@ class PengadaanController extends Controller
             return;
         }
 
+        $prefix = \App\Models\Pengaturan::first()->kode_inventaris_prefix ?? 'INV';
+        $year = date('Y');
+        $idPengadaan = str_pad($pengadaan->id_pengadaan, 3, '0', STR_PAD_LEFT);
+
         $details = DetailPengadaan::where('id_pengadaan', $pengadaan->id_pengadaan)->get();
 
-        foreach ($details as $detail) {
+        foreach ($details as $detailIndex => $detail) {
+            $urutan = str_pad($detailIndex + 1, 3, '0', STR_PAD_LEFT);
+            $jumlah = str_pad($detail->jumlah_masuk, 3, '0', STR_PAD_LEFT);
+
             for ($i = 0; $i < $detail->jumlah_masuk; $i++) {
+                $unit = str_pad($i + 1, 3, '0', STR_PAD_LEFT);
                 $kodeBarang = 'ASET-' . date('Ymd') . '-' . strtoupper(Str::random(6));
 
                 $maxRetries = 10;
@@ -233,9 +235,14 @@ class PengadaanController extends Controller
                     }
                 }
 
-                $kodeInventaris = 'INV-' . date('Ymd') . '-' . strtoupper(Str::random(6));
+                $kodeInventaris = "{$prefix}-{$year}-{$idPengadaan}-{$urutan}-{$jumlah}-{$unit}";
+                $attempts = 0;
                 while (Aset::where('kode_inventaris', $kodeInventaris)->exists()) {
-                    $kodeInventaris = 'INV-' . date('Ymd') . '-' . strtoupper(Str::random(6));
+                    $attempts++;
+                    if ($attempts >= $maxRetries) {
+                        throw new Exception("Gagal membuat kode inventaris unik setelah {$maxRetries} percobaan.");
+                    }
+                    $kodeInventaris = "{$prefix}-{$year}-{$idPengadaan}-{$urutan}-{$jumlah}-{$unit}-{$attempts}";
                 }
 
                 Aset::create([

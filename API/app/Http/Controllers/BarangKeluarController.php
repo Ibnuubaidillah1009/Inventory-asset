@@ -76,13 +76,12 @@ class BarangKeluarController extends Controller
             'penerima',
             'petugasUser',
             'gudang'
-        ])->get();
+        ])->paginate(20);
 
-        return response()->json([
+        return BarangKeluarResource::collection($data)->additional([
             'status'  => true,
             'message' => 'Daftar barang keluar berhasil diambil.',
-            'data'    => BarangKeluarResource::collection($data)
-        ]);
+        ])->response();
     }
 
     /**

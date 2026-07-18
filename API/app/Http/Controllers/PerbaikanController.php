@@ -8,6 +8,7 @@ use App\Models\Aset;
 use App\Models\Kerusakan;
 use App\Models\Perbaikan;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -52,8 +53,11 @@ class PerbaikanController extends Controller
      */
     public function index(): JsonResponse
     {
-        $data = Perbaikan::with(['kerusakan.aset.masterBarang'])->orderByDesc('id_perbaikan')->get();
-        return response()->json(['status' => true, 'message' => 'Daftar perbaikan berhasil diambil.', 'data' => PerbaikanResource::collection($data)]);
+        $data = Perbaikan::with(['kerusakan.aset.masterBarang'])->orderByDesc('id_perbaikan')->paginate(20);
+        return PerbaikanResource::collection($data)->additional([
+            'status'  => true,
+            'message' => 'Daftar perbaikan berhasil diambil.',
+        ])->response();
     }
 
     /**
@@ -99,6 +103,24 @@ class PerbaikanController extends Controller
         $perbaikan = Perbaikan::with(['kerusakan.aset.masterBarang'])->find($id);
         if (!$perbaikan) { return response()->json(['status' => false, 'message' => 'Perbaikan tidak ditemukan.'], 404); }
         return response()->json(['status' => true, 'message' => 'Detail perbaikan berhasil diambil.', 'data' => new PerbaikanResource($perbaikan)]);
+    }
+
+    public function update(Request $request, string $id): JsonResponse
+    {
+        $perbaikan = Perbaikan::find($id);
+        if (!$perbaikan) { return response()->json(['status' => false, 'message' => 'Perbaikan tidak ditemukan.'], 404); }
+
+        $validated = $request->validate([
+            'tanggal_perbaikan' => 'sometimes|date',
+            'teknisi' => 'sometimes|nullable|string',
+            'biaya_perbaikan' => 'sometimes|nullable|numeric|min:0',
+            'tindakan_perbaikan' => 'sometimes|string',
+        ]);
+
+        $perbaikan->update($validated);
+        $perbaikan->load(['kerusakan.aset.masterBarang']);
+
+        return response()->json(['status' => true, 'message' => 'Perbaikan berhasil diperbarui.', 'data' => new PerbaikanResource($perbaikan)]);
     }
 
     /**

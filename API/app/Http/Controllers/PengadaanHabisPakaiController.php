@@ -68,8 +68,11 @@ class PengadaanHabisPakaiController extends Controller
      */
     public function index(): JsonResponse
     {
-        $data = PengadaanHabisPakai::with(['asetHabisPakai', 'pemasok', 'gudang'])->get();
-        return response()->json(['status' => true, 'message' => 'Daftar pengadaan habis pakai berhasil diambil.', 'data' => PengadaanHabisPakaiResource::collection($data)]);
+        $data = PengadaanHabisPakai::with(['asetHabisPakai', 'pemasok', 'gudang'])->paginate(20);
+        return PengadaanHabisPakaiResource::collection($data)->additional([
+            'status'  => true,
+            'message' => 'Daftar pengadaan habis pakai berhasil diambil.',
+        ])->response();
     }
 
     /**

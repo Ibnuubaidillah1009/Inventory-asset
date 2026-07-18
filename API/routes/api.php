@@ -385,6 +385,8 @@ Route::middleware('auth:sanctum')->group(function () {
             ->middleware('cek.hak.akses:aset,hak_baca');
         Route::put('/{aset}', [AsetController::class, 'update'])
             ->middleware('cek.hak.akses:aset,hak_ubah');
+        Route::put('/{aset}/status', [AsetController::class, 'updateStatus'])
+            ->middleware('cek.hak.akses:aset,hak_ubah');
         Route::delete('/{aset}', [AsetController::class, 'destroy'])
             ->middleware('cek.hak.akses:aset,hak_hapus');
     });
@@ -493,6 +495,8 @@ Route::middleware('auth:sanctum')->group(function () {
             ->middleware('cek.hak.akses:kerusakan,hak_buat');
         Route::get('/{kerusakan}', [KerusakanController::class, 'show'])
             ->middleware('cek.hak.akses:kerusakan,hak_baca');
+        Route::put('/{kerusakan}', [KerusakanController::class, 'update'])
+            ->middleware('cek.hak.akses:kerusakan,hak_ubah');
         Route::delete('/{kerusakan}', [KerusakanController::class, 'destroy'])
             ->middleware('cek.hak.akses:kerusakan,hak_hapus');
     });
@@ -505,6 +509,8 @@ Route::middleware('auth:sanctum')->group(function () {
             ->middleware('cek.hak.akses:perbaikan,hak_buat');
         Route::get('/{perbaikan}', [PerbaikanController::class, 'show'])
             ->middleware('cek.hak.akses:perbaikan,hak_baca');
+        Route::put('/{perbaikan}', [PerbaikanController::class, 'update'])
+            ->middleware('cek.hak.akses:perbaikan,hak_ubah');
         Route::delete('/{perbaikan}', [PerbaikanController::class, 'destroy'])
             ->middleware('cek.hak.akses:perbaikan,hak_hapus');
     });
@@ -605,6 +611,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/backup', [DatabaseController::class, 'backup']);
         Route::post('/restore', [DatabaseController::class, 'restore']);
         Route::post('/reset', [DatabaseController::class, 'reset']);
+        Route::post('/test-connection', [DatabaseController::class, 'testConnection']);
         Route::post('/change-connection', [DatabaseController::class, 'changeConnection']);
     });
 });

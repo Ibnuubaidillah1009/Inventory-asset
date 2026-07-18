@@ -23,5 +23,6 @@ class Pengaturan extends Model
         'kepala_sekolah',
         'NIP',
         'bagian_inventaris',
+        'kode_inventaris_prefix',
     ];
 }

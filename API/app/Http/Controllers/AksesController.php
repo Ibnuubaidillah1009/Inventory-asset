@@ -95,13 +95,12 @@ class AksesController extends Controller
      */
     public function index(): JsonResponse
     {
-        $akses = Akses::all();
+        $akses = Akses::paginate(20);
 
-        return response()->json([
+        return AksesResource::collection($akses)->additional([
             'status'  => true,
             'message' => 'Daftar akses berhasil diambil.',
-            'data'    => AksesResource::collection($akses),
-        ]);
+        ])->response();
     }
 
     /**

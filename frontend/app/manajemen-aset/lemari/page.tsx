@@ -1,5 +1,7 @@
 'use client';
 
+import { extractData } from '@/lib/utils';
+
 import { useState, useEffect } from 'react';
 import api from '@/utils/api';
 import { Plus, Pencil, Trash2, X, Loader2, Search, Eye } from 'lucide-react';
@@ -32,12 +34,12 @@ export default function LemariPage() {
         api.get('/ruang').catch(() => ({ data: { data: [] } }))
       ]);
 
-      setData(resLemari.data.data || []);
+      setData(extractData(resLemari.data.data));
       if (resLemari.data.meta) {
         setCurrentPage(resLemari.data.meta.current_page);
         setLastPage(resLemari.data.meta.last_page);
       }
-      setRuangList(resRuang.data.data || []);
+      setRuangList(extractData(resRuang.data.data));
     } catch (error) {
       console.error('Gagal mengambil data lemari', error);
     } finally {
@@ -154,7 +156,7 @@ export default function LemariPage() {
           <table className="w-full text-sm text-left">
             <thead className="text-xs text-gray-500 bg-gray-50 border-b border-gray-200 uppercase">
               <tr>
-                <th className="px-6 py-4 font-medium">No</th>
+                <th className="px-6 py-4 font-medium">No.</th>
                 <th className="px-6 py-4 font-medium">ID Lemari</th>
                 <th className="px-6 py-4 font-medium">Nama Lemari</th>
                 <th className="px-6 py-4 font-medium">Ruang</th>
@@ -187,7 +189,7 @@ export default function LemariPage() {
                       <button onClick={() => openDetailModal(item)} className="text-gray-400 hover:text-blue-600 mr-3 transition-colors cursor-pointer" title="Lihat Detail">
                         <Eye className="h-4 w-4" />
                       </button>
-                      <button onClick={() => openModal(item)} className="text-gray-400 hover:text-gray-900 mr-3 transition-colors cursor-pointer" title="Edit">
+                      <button onClick={() => openModal(item)} className="text-gray-400 hover:text-gray-900 mr-3 transition-colors cursor-pointer" title="Ubah">
                         <Pencil className="h-4 w-4" />
                       </button>
                       <button onClick={() => handleDelete(item.id_lemari || item.id)} className="text-gray-400 hover:text-red-600 transition-colors cursor-pointer" title="Hapus">

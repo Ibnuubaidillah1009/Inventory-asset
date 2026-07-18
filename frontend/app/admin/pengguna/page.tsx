@@ -184,7 +184,7 @@ export default function ManajemenPengguna() {
           <table className="w-full text-left text-sm">
             <thead className="bg-gray-50 text-gray-600 border-b border-gray-200">
               <tr>
-                <th className="px-6 py-4 font-medium">No</th>
+                <th className="px-6 py-4 font-medium">No.</th>
                 <th className="px-6 py-4 font-medium">Nama Pengguna</th>
                 <th className="px-6 py-4 font-medium">Peran</th>
                 <th className="px-6 py-4 font-medium">Kelas</th>
@@ -227,7 +227,7 @@ export default function ManajemenPengguna() {
                         <button
                           onClick={() => handleOpenModal('edit', item)}
                           className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                          title="Edit"
+                          title="Ubah"
                         >
                           <Pencil className="w-4 h-4" />
                         </button>

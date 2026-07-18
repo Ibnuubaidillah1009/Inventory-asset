@@ -84,11 +84,11 @@ class JurusanController extends Controller
      */
     public function index(): JsonResponse
     {
-        return response()->json([
+        $data = Jurusan::paginate(20);
+        return JurusanResource::collection($data)->additional([
             'status'  => true,
             'message' => 'Daftar jurusan berhasil diambil.',
-            'data'    => JurusanResource::collection(Jurusan::all()),
-        ]);
+        ])->response();
     }
 
     /**

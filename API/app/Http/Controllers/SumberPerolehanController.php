@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\SumberPerolehan;
+use App\Http\Resources\SumberPerolehanResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
@@ -10,12 +11,11 @@ class SumberPerolehanController extends Controller
 {
     public function index(): JsonResponse
     {
-        $data = SumberPerolehan::all();
-        return response()->json([
+        $data = SumberPerolehan::paginate(20);
+        return SumberPerolehanResource::collection($data)->additional([
             'status' => true,
             'message' => 'Daftar sumber perolehan berhasil diambil.',
-            'data' => $data
-        ]);
+        ])->response();
     }
 
     public function store(Request $request): JsonResponse

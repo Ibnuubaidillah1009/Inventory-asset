@@ -95,11 +95,11 @@ class PemasokController extends Controller
      */
     public function index(): JsonResponse
     {
-        return response()->json([
+        $data = Pemasok::paginate(20);
+        return PemasokResource::collection($data)->additional([
             'status'  => true,
             'message' => 'Daftar pemasok berhasil diambil.',
-            'data'    => PemasokResource::collection(Pemasok::all()),
-        ]);
+        ])->response();
     }
 
     /**

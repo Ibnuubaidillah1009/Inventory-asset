@@ -1,5 +1,7 @@
 'use client';
 
+import { extractData } from '@/lib/utils';
+
 import { useState, useEffect } from 'react';
 import api from '@/utils/api';
 import Link from 'next/link';
@@ -20,10 +22,10 @@ export default function ProsesPage() {
           api.get('/barang-non-aktif').catch(() => ({ data: { data: [] } })),
         ]);
         setStats({
-          opname: (resOpname.data.data || []).length,
-          mutasi: (resMutasi.data.data || []).length,
-          dipinjam: (resPeminjaman.data.data || []).filter((p: any) => p.status_peminjaman === 'Sedang Dipinjam').length,
-          nonAktif: (resNonAktif.data.data || []).length,
+          opname: (extractData(resOpname.data.data)).length,
+          mutasi: (extractData(resMutasi.data.data)).length,
+          dipinjam: (extractData(resPeminjaman.data.data)).filter((p: any) => p.status_peminjaman === 'Sedang Dipinjam').length,
+          nonAktif: (extractData(resNonAktif.data.data)).length,
         });
       } catch { } finally { setLoading(false); }
     };

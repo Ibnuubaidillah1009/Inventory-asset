@@ -47,6 +47,94 @@ const ICON_MAP: Record<string, any> = {
   'PENGATURAN SISTEM': Settings,
 };
 
+const LABEL_MAP: Record<string, string> = {
+  'Inventaris': 'Inventaris',
+  'Proses': 'Proses',
+  'Brg Habis Pakai': 'Barang Habis Pakai',
+  'Laporan': 'Laporan',
+  'Tools': 'Peralatan',
+  'Admin': 'Administrasi',
+  'Help': 'Bantuan',
+  'Pengadaan Barang': 'Pengadaan Barang',
+  'Input Tanah': 'Input Tanah',
+  'Input Bangunan': 'Input Bangunan',
+  'Mutasi Barang': 'Mutasi Barang',
+  'Proses Opname': 'Proses Opname',
+  'Non Aktif Barang': 'Non-Aktif Barang',
+  'peminjaman': 'Peminjaman',
+  'Pengembalian': 'Pengembalian',
+  'Master Data Brg Habis Pakai': 'Master Data Barang Habis Pakai',
+  'Data Barang Habis Pakai': 'Data Barang Habis Pakai',
+  'Barang Keluar': 'Barang Keluar',
+  'Lap Stok Barang': 'Laporan Stok Barang',
+  'Lap Stok Brg Habis Pakai': 'Laporan Stok Barang Habis Pakai',
+  'Lap Stok Minimal Brg Habis Pakai': 'Laporan Stok Minimal Barang Habis Pakai',
+  'Pengadaan Brg Habis Pakai': 'Pengadaan Barang Habis Pakai',
+  'Permintaan Brg Habis Pakai': 'Permintaan Barang Habis Pakai',
+  'Permintaan Barang': 'Permintaan Barang',
+  'Koneksi': 'Koneksi',
+  'Backup': 'Cadangan',
+  'Restore': 'Pemulihan',
+  'Reset': 'Atur Ulang',
+  'Data Master': 'Data Master',
+  'Set Lembaga': 'Atur Lembaga',
+  'User': 'Pengguna',
+  'Wallpaper': 'Gambar Latar',
+  'Group User': 'Grup Pengguna',
+  'About': 'Tentang',
+  'Tutorial': 'Panduan',
+  'Aktivasi': 'Aktivasi',
+  'pengguna': 'Pengguna',
+  'peran': 'Peran',
+  'akses': 'Akses',
+  'jurusan': 'Jurusan',
+  'rombel': 'Rombel',
+  'kelas': 'Kelas',
+  'mapel': 'Mata Pelajaran',
+  'unit': 'Unit',
+  'tahun_ajaran': 'Tahun Ajaran',
+  'kategori': 'Kategori',
+  'merek': 'Merek',
+  'satuan': 'Satuan',
+  'master_barang': 'Master Barang',
+  'pemasok': 'Pemasok',
+  'gudang': 'Gudang',
+  'sumber_perolehan': 'Sumber Perolehan',
+  'aset': 'Aset',
+  'lokasi': 'Lokasi',
+  'ruang': 'Ruang',
+  'lemari': 'Lemari',
+  'kondisi': 'Kondisi',
+  'status_barang': 'Status Barang',
+  'opname_aset': 'Opname Aset',
+  'pengadaan': 'Pengadaan',
+  'permintaan': 'Permintaan',
+  'mutasi': 'Mutasi',
+  'barang_keluar': 'Barang Keluar',
+  'kerusakan': 'Kerusakan',
+  'perbaikan': 'Perbaikan',
+  'penghapusan_aset': 'Penghapusan Aset',
+  'barang_non_aktif': 'Barang Non-Aktif',
+  'tanah_non_aktif': 'Tanah Non-Aktif',
+  'bangunan_non_aktif': 'Bangunan Non-Aktif',
+  'aset_habis_pakai': 'Aset Habis Pakai',
+  'pengadaan_habis_pakai': 'Pengadaan Habis Pakai',
+  'pengaturan': 'Pengaturan',
+  'database': 'Basis Data',
+  'laporan_barang': 'Laporan Barang',
+  'laporan_transaksi': 'Laporan Transaksi',
+  'laporan_peminjaman': 'Laporan Peminjaman',
+  'MANAJEMEN PENGGUNA': 'Manajemen Pengguna',
+  'MASTER SEKOLAH': 'Master Sekolah',
+  'MASTER BARANG': 'Master Barang',
+  'MANAJEMEN ASET': 'Manajemen Aset',
+  'TRANSAKSI': 'Transaksi',
+  'ASET NON-AKTIF': 'Aset Non-Aktif',
+  'HABIS PAKAI': 'Habis Pakai',
+  'PENGATURAN SISTEM': 'Pengaturan Sistem',
+  'AUTENTIKASI': 'Otentikasi',
+};
+
 interface Akses {
   nama_modul: string;
   hak_baca: number | boolean;
@@ -99,7 +187,10 @@ export default function ShellLayout({ children }: { children: React.ReactNode })
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
 
   const toggleMenu = (label: string) => {
-    setOpenMenus(prev => ({ ...prev, [label]: !prev[label] }));
+    setOpenMenus(prev => {
+      const isOpen = prev[label];
+      return { [label]: !isOpen };
+    });
   };
 
   useEffect(() => {
@@ -127,13 +218,13 @@ export default function ShellLayout({ children }: { children: React.ReactNode })
             if (parent.nama_modul === 'AUTENTIKASI') return;
 
             const parentIcon = ICON_MAP[parent.nama_modul] || Box;
-            const parentLabel = parent.nama_modul.split('_').map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
+            const parentLabel = LABEL_MAP[parent.nama_modul] || parent.nama_modul.split('_').map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
             const parentPath = modulToPath(parent.nama_modul);
 
             if (parent.children_recursive && parent.children_recursive.length > 0) {
               const subItems = parent.children_recursive.map((child: any) => {
                 const childPath = modulToPath(child.nama_modul);
-                const childLabel = child.nama_modul.split('_').map((word: string) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+                const childLabel = LABEL_MAP[child.nama_modul] || child.nama_modul.split('_').map((word: string) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
                 return {
                   label: childLabel,
                   href: `/${parentPath}/${childPath}`,
@@ -210,6 +301,7 @@ export default function ShellLayout({ children }: { children: React.ReactNode })
               const Icon = menu.icon;
 
               if (menu.subItems) {
+                const isOpen = !!openMenus[menu.label];
                 return (
                   <div key={`dropdown-${index}`} className="flex flex-col space-y-1">
                     <button
@@ -220,34 +312,39 @@ export default function ShellLayout({ children }: { children: React.ReactNode })
                         <Icon className="mr-3 h-5 w-5 shrink-0" />
                         {menu.label}
                       </div>
-                      {openMenus[menu.label] ? (
-                        <ChevronDown className="h-4 w-4" />
-                      ) : (
-                        <ChevronRight className="h-4 w-4" />
-                      )}
+                      <ChevronDown
+                        className={`h-4 w-4 transition-transform duration-300 ease-in-out ${
+                          isOpen ? 'rotate-0' : '-rotate-90'
+                        }`}
+                      />
                     </button>
 
-                    {openMenus[menu.label] && (
-                      <div className="pl-10 pr-2 space-y-1 mt-1">
-                        {menu.subItems.map((sub: { href: string; label: string; modul: string }) => {
-                          const isSubActive = pathname === sub.href || pathname.startsWith(sub.href + '/');
-                          return (
-                            <Link
-                              key={sub.href}
-                              href={sub.href}
-                              className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                                isSubActive
-                                  ? 'bg-gray-100 text-gray-900'
-                                  : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
-                              }`}
-                            >
-                              <Circle className={`mr-3 h-2 w-2 shrink-0 ${isSubActive ? 'fill-gray-900 text-gray-900' : 'text-gray-400'}`} />
-                              {sub.label}
-                            </Link>
-                          );
-                        })}
+                    <div
+                      className="grid transition-[grid-template-rows] duration-300 ease-in-out"
+                      style={{ gridTemplateRows: isOpen ? '1fr' : '0fr' }}
+                    >
+                      <div className="overflow-hidden">
+                        <div className="pl-10 pr-2 space-y-1 pb-1">
+                          {menu.subItems.map((sub: { href: string; label: string; modul: string }) => {
+                            const isSubActive = pathname === sub.href || pathname.startsWith(sub.href + '/');
+                            return (
+                              <Link
+                                key={sub.href}
+                                href={sub.href}
+                                className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                                  isSubActive
+                                    ? 'bg-gray-100 text-gray-900'
+                                    : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                                }`}
+                              >
+                                <Circle className={`mr-3 h-2 w-2 shrink-0 ${isSubActive ? 'fill-gray-900 text-gray-900' : 'text-gray-400'}`} />
+                                {sub.label}
+                              </Link>
+                            );
+                          })}
+                        </div>
                       </div>
-                    )}
+                    </div>
                   </div>
                 );
               }
@@ -289,7 +386,7 @@ export default function ShellLayout({ children }: { children: React.ReactNode })
             className="flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors cursor-pointer"
           >
             <LogOut className="mr-2 h-4 w-4 cursor-pointer" />
-            Logout
+            Keluar
           </button>
         </header>
 

@@ -152,7 +152,7 @@ class PermintaanController extends Controller
     public function keputusan(Request $request, string $id): JsonResponse
     {
         $request->validate([
-            'status_persetujuan' => 'required|string|in:diproses,disetujui,ditolak',
+            'status_persetujuan' => 'required|string|in:Menunggu,Disetujui,Ditolak,diproses,disetujui,ditolak',
             'alasan_disetujui'   => 'nullable|string',
         ]);
 
@@ -162,12 +162,12 @@ class PermintaanController extends Controller
             return response()->json(['status' => false, 'message' => 'Permintaan tidak ditemukan.'], 404);
         }
 
-        if ($permintaan->status_persetujuan !== 'diproses') {
+        if (!in_array($permintaan->status_persetujuan, ['diproses', 'Menunggu'])) {
             return response()->json(['status' => false, 'message' => 'Permintaan ini sudah diproses sebelumnya.'], 422);
         }
 
         $permintaan->update([
-            'status_persetujuan'  => $request->status_persetujuan,
+            'status_persetujuan'  => $request->status_persetujuan === 'disetujui' ? 'Disetujui' : ($request->status_persetujuan === 'ditolak' ? 'Ditolak' : $request->status_persetujuan),
             'alasan_disetujui'    => $request->alasan_disetujui,
             'tanggal_persetujuan' => now(),
             'id_penyetuju'        => auth()->id() ?? 1, // fallback for testing if no auth
@@ -188,26 +188,22 @@ class PermintaanController extends Controller
      *     @OA\Response(response=422, description="Hanya status Menunggu yang dapat dihapus")
      * )
      */
-    // public function destroy(string $id): JsonResponse
-    // {
-    //     $permintaan = Permintaan::find($id);
+    public function destroy(string $id): JsonResponse
+    {
+        $permintaan = Permintaan::find($id);
 
-    //     if (!$permintaan) {
-    //         return response()->json(['status' => false, 'message' => 'Permintaan tidak ditemukan.'], 404);
-    //     }
+        if (!$permintaan) {
+            return response()->json(['status' => false, 'message' => 'Permintaan tidak ditemukan.'], 404);
+        }
 
-    //     if ($permintaan->status_persetujuan !== 'diproses') {
-    //         return response()->json(['status' => false, 'message' => 'Hanya permintaan berstatus "diproses" yang dapat dihapus.'], 422);
-    //     }
+        DB::transaction(function () use ($permintaan) {
+            $permintaan->detailPermintaan()->delete();
+            $permintaan->delete();
+        });
 
-    //     DB::transaction(function () use ($permintaan) {
-    //         $permintaan->detailPermintaan()->delete();
-    //         $permintaan->delete();
-    //     });
-
-    //     return response()->json([
-    //         'status'  => true,
-    //         'message' => 'Permintaan berhasil dihapus.',
-    //     ]);
-    // }
+        return response()->json([
+            'status'  => true,
+            'message' => 'Permintaan berhasil dihapus.',
+        ]);
+    }
 }

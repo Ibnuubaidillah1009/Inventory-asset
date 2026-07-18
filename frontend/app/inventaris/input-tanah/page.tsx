@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import api from '@/utils/api';
 import { Plus, Pencil, Trash2, X, Loader2, Search, Eye } from 'lucide-react';
+import { extractData, formatDate } from '@/lib/utils';
 
 export default function InputTanahPage() {
   const [data, setData] = useState<any[]>([]);
@@ -39,9 +40,9 @@ export default function InputTanahPage() {
         api.get('/lokasi').catch(() => ({ data: { data: [] } })),
       ]);
 
-      const asetData = (resAset.data.data || []).filter((a: any) => a.aset_tanah || a.nama_pemilik);
+      const asetData = (extractData(resAset.data.data)).filter((a: any) => a.aset_tanah || a.nama_pemilik);
       setData(asetData);
-      setLokasiList(resLokasi.data.data || []);
+      setLokasiList(extractData(resLokasi.data.data));
 
       if (resAset.data.meta) {
         setCurrentPage(resAset.data.meta.current_page);
@@ -205,7 +206,7 @@ export default function InputTanahPage() {
           <table className="w-full text-sm text-left">
             <thead className="text-xs text-gray-500 bg-gray-50 border-b border-gray-200 uppercase">
               <tr>
-                <th className="px-6 py-4 font-medium">No</th>
+                <th className="px-6 py-4 font-medium">No.</th>
                 <th className="px-6 py-4 font-medium">Kode Inventaris</th>
                 <th className="px-6 py-4 font-medium">Nama Pemilik</th>
                 <th className="px-6 py-4 font-medium">Luas (m²)</th>
@@ -244,7 +245,7 @@ export default function InputTanahPage() {
                       <button onClick={() => openDetailModal(item)} className="text-gray-400 hover:text-blue-600 mr-3 transition-colors cursor-pointer" title="Lihat Detail">
                         <Eye className="h-4 w-4" />
                       </button>
-                      <button onClick={() => openModal(item)} className="text-gray-400 hover:text-gray-900 mr-3 transition-colors cursor-pointer" title="Edit">
+                      <button onClick={() => openModal(item)} className="text-gray-400 hover:text-gray-900 mr-3 transition-colors cursor-pointer" title="Ubah">
                         <Pencil className="h-4 w-4" />
                       </button>
                       <button onClick={() => handleDelete(item.kode_barang)} className="text-gray-400 hover:text-red-600 transition-colors cursor-pointer" title="Hapus">
@@ -325,7 +326,7 @@ export default function InputTanahPage() {
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">Tanggal Perolehan</label>
-                  <div className="text-gray-900 font-medium bg-gray-50 p-2 rounded-md border border-gray-100">{selectedItem.aset_tanah?.tanggal_perolehan || selectedItem.tanggal_perolehan || '-'}</div>
+                  <div className="text-gray-900 font-medium bg-gray-50 p-2 rounded-md border border-gray-100">{formatDate(selectedItem.aset_tanah?.tanggal_perolehan || selectedItem.tanggal_perolehan)}</div>
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">Sumber Perolehan</label>

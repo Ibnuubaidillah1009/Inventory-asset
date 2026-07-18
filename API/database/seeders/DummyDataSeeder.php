@@ -21,8 +21,15 @@ class DummyDataSeeder extends Seeder
         // ==========================================
         // 1. DATA MASTER REFERENSI UTAMA & LOKASI
         // ==========================================
+        $jurusanList = [
+            'RPL', 'TKJ', 'LISTRIK', 'ELEKTRO', 'BUSANA',
+            'DKV', 'BP', 'MEKATRONIKA', 'OTOMOTIF',
+        ];
+        foreach ($jurusanList as $i => $nama) {
+            DB::table('jurusan')->insertOrIgnore(['id_jurusan' => $i + 1, 'nama_jurusan' => $nama]);
+        }
+
         for ($i = 1; $i <= 3; $i++) {
-            DB::table('jurusan')->insertOrIgnore(['id_jurusan' => $i, 'nama_jurusan' => "Jurusan Dummy $i"]);
             DB::table('mapel')->insertOrIgnore(['id_mapel' => $i, 'nama_mapel' => "Mapel Dummy $i"]);
             DB::table('unit')->insertOrIgnore(['id_unit' => $i, 'nama_unit' => "Unit Dummy $i"]);
             DB::table('lokasi')->insertOrIgnore(['id_lokasi' => $i, 'nama_lokasi' => "Lokasi Dummy $i"]);
@@ -55,15 +62,21 @@ class DummyDataSeeder extends Seeder
         // ==========================================
         // 2. DATA MASTER REFERENSI TURUNAN
         // ==========================================
+        $ruangList = [
+            'Perpustakaan','Tata Usaha','WK1','WK2','WK3','WK4',
+            'Bendahara Barang','Gudang','Masjid','Kepala Bengkel',
+            'Server','LSP','Keuangan',
+        ];
+        foreach ($ruangList as $i => $nama) {
+            DB::table('ruang')->insertOrIgnore(['id_ruang' => $i + 1, 'nama_ruang' => $nama]);
+        }
+
         for ($i = 1; $i <= 3; $i++) {
             $idJurusan = DB::table('jurusan')->inRandomOrder()->value('id_jurusan') ?? 1;
             DB::table('rombel')->insertOrIgnore(['id_rombel' => $i, 'id_jurusan' => $idJurusan, 'nama_rombel' => "Rombel Dummy $i"]);
 
             $idRombel = DB::table('rombel')->inRandomOrder()->value('id_rombel') ?? 1;
             DB::table('kelas')->insertOrIgnore(['id_kelas' => $i, 'id_rombel' => $idRombel, 'nama_kelas' => "Kelas $i", 'tahun_ajaran' => '2025/2026']);
-
-            $idLokasi = DB::table('lokasi')->inRandomOrder()->value('id_lokasi') ?? 1;
-            DB::table('ruang')->insertOrIgnore(['id_ruang' => $i, 'id_lokasi' => $idLokasi, 'nama_ruang' => "Ruang Dummy $i"]);
         }
 
         // ==========================================
@@ -292,6 +305,94 @@ class DummyDataSeeder extends Seeder
                 'nomor_peminjaman' => $nomorPeminjaman,
                 'tanggal_kembali' => now()->toDateString()
             ]);
+        }
+
+        // ==========================================
+        // 8. PERMINTAAN BARANG
+        // ==========================================
+        $penggunaIds = DB::table('pengguna')->pluck('id_pengguna')->toArray();
+        $masterBarangIds = DB::table('master_barang')->pluck('id_master_barang')->toArray();
+
+        $permintaanData = [
+            [
+                'kode' => 'PRM-2026-001',
+                'keterangan' => 'Pengadaan laptop untuk praktikum pemrograman web semester genap',
+                'status' => 'disetujui',
+                'barang' => [['id' => $masterBarangIds[0] ?? 1, 'jumlah' => 10, 'alasan' => 'Kurangnya laptop di lab komputer']],
+            ],
+            [
+                'kode' => 'PRM-2026-002',
+                'keterangan' => 'Pengadaan printer untuk keperluan administrasi',
+                'status' => 'disetujui',
+                'barang' => [['id' => $masterBarangIds[1] ?? 2, 'jumlah' => 3, 'alasan' => 'Printer lama sudah tidak berfungsi']],
+            ],
+            [
+                'kode' => 'PRM-2026-003',
+                'keterangan' => 'Pengadaan proyektor untuk ruang presentasi',
+                'status' => 'diproses',
+                'barang' => [['id' => $masterBarangIds[2] ?? 3, 'jumlah' => 2, 'alasan' => 'Proyektor existing sudah redup']],
+            ],
+            [
+                'kode' => 'PRM-2026-004',
+                'keterangan' => 'Pengadaan meja dan kursi untuk ruang guru baru',
+                'status' => 'diproses',
+                'barang' => [
+                    ['id' => $masterBarangIds[3] ?? 4, 'jumlah' => 15, 'alasan' => 'Ruang guru baru membutuhkan furniture'],
+                    ['id' => $masterBarangIds[4] ?? 5, 'jumlah' => 15, 'alasan' => 'Kursi belum tersedia di ruang baru'],
+                ],
+            ],
+            [
+                'kode' => 'PRM-2026-005',
+                'keterangan' => 'Pengadaan alat laboratorium IPA',
+                'status' => 'ditolak',
+                'barang' => [['id' => $masterBarangIds[5] ?? 6, 'jumlah' => 20, 'alasan' => 'Alat lab sudah rusak parah']],
+            ],
+            [
+                'kode' => 'PRM-2026-006',
+                'keterangan' => 'Pengadaan speaker aktif untuk acara sekolah',
+                'status' => 'disetujui',
+                'barang' => [['id' => $masterBarangIds[6] ?? 7, 'jumlah' => 5, 'alasan' => 'Speaker existing mati total']],
+            ],
+            [
+                'kode' => 'PRM-2026-007',
+                'keterangan' => 'Pengadaan AC untuk ruang kelas lantai 3',
+                'status' => 'diproses',
+                'barang' => [['id' => $masterBarangIds[7] ?? 8, 'jumlah' => 4, 'alasan' => 'Suhu ruangan terlalu panas']],
+            ],
+            [
+                'kode' => 'PRM-2026-008',
+                'keterangan' => 'Pengadaan whiteboard untuk kelas 12',
+                'status' => 'disetujui',
+                'barang' => [['id' => $masterBarangIds[8] ?? 9, 'jumlah' => 6, 'alasan' => 'Whiteboard sudah pudar tulisannya']],
+            ],
+        ];
+
+        foreach ($permintaanData as $idx => $p) {
+            $idPengguna = $penggunaIds[array_rand($penggunaIds)];
+            $tglSetuju = in_array($p['status'], ['disetujui', 'ditolak']) ? now()->subDays(rand(1, 5))->toDateString() : null;
+            $idPenyetuju = $tglSetuju ? $penggunaIds[array_rand($penggunaIds)] : null;
+
+            DB::table('permintaan')->insertOrIgnore([
+                'kode_permintaan'      => $p['kode'],
+                'id_jurusan'           => null,
+                'id_pengguna'          => $idPengguna,
+                'tanggal_permintaan'   => now()->subDays(rand(1, 14))->toDateString(),
+                'keterangan_keperluan' => $p['keterangan'],
+                'status_persetujuan'   => $p['status'],
+                'tanggal_persetujuan'  => $tglSetuju,
+                'id_penyetuju'         => $idPenyetuju,
+                'alasan_disetujui'     => $p['status'] === 'disetujui' ? 'Kebutuhan sudah sesuai anggaran' : ($p['status'] === 'ditolak' ? 'Anggaran tidak mencukupi untuk tahun ini' : null),
+            ]);
+
+            foreach ($p['barang'] as $detailIdx => $b) {
+                DB::table('detail_permintaan')->insertOrIgnore([
+                    'id_detail_permintaan' => ($idx + 1) * 100 + $detailIdx + 1,
+                    'kode_permintaan'      => $p['kode'],
+                    'id_master_barang'     => $b['id'],
+                    'jumlah_diminta'       => $b['jumlah'],
+                    'alasan_kebutuhan'     => $b['alasan'],
+                ]);
+            }
         }
 
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');

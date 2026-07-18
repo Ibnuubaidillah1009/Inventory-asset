@@ -60,8 +60,11 @@ class BarangNonAktifController extends Controller
      */
     public function index(): JsonResponse
     {
-        $data = BarangNonAktif::with(['aset', 'statusBarang'])->get();
-        return response()->json(['status' => true, 'message' => 'Daftar barang non-aktif berhasil diambil.', 'data' => BarangNonAktifResource::collection($data)]);
+        $data = BarangNonAktif::with(['aset', 'statusBarang'])->paginate(20);
+        return BarangNonAktifResource::collection($data)->additional([
+            'status'  => true,
+            'message' => 'Daftar barang non-aktif berhasil diambil.',
+        ])->response();
     }
 
     /**

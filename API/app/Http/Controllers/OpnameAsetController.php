@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\OpnameAset;
 use App\Http\Requests\StoreOpnameAsetRequest;
 use App\Http\Requests\UpdateOpnameAsetRequest;
+use App\Http\Resources\OpnameAsetResource;
 use Illuminate\Http\JsonResponse;
 
 /**
@@ -56,13 +57,12 @@ class OpnameAsetController extends Controller
      */
     public function index(): JsonResponse
     {
-        $data = OpnameAset::with(['aset', 'kondisi'])->get();
+        $data = OpnameAset::with(['aset', 'kondisi'])->paginate(20);
 
-        return response()->json([
+        return OpnameAsetResource::collection($data)->additional([
             'status'  => true,
             'message' => 'Daftar opname aset berhasil diambil.',
-            'data'    => $data,
-        ]);
+        ])->response();
     }
 
     /**

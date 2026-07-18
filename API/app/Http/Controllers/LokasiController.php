@@ -87,12 +87,11 @@ class LokasiController extends Controller
      */
     public function index(): JsonResponse
     {
-        $lokasi = Lokasi::all();
-        return response()->json([
+        $lokasi = Lokasi::paginate(20);
+        return LokasiResource::collection($lokasi)->additional([
             'status'  => true,
             'message' => 'Daftar lokasi berhasil diambil.',
-            'data'    => LokasiResource::collection($lokasi),
-        ]);
+        ])->response();
     }
 
     /**

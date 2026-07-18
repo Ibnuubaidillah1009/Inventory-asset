@@ -46,8 +46,11 @@ class MerekController extends Controller
      */
     public function index(): JsonResponse
     {
-        $merek = Merek::all();
-        return response()->json(['status' => true, 'message' => 'Daftar merek berhasil diambil.', 'data' => MerekResource::collection($merek)]);
+        $merek = Merek::paginate(20);
+        return MerekResource::collection($merek)->additional([
+            'status'  => true,
+            'message' => 'Daftar merek berhasil diambil.',
+        ])->response();
     }
 
     /**

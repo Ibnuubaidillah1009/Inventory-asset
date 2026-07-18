@@ -7,6 +7,7 @@ use App\Http\Requests\StoreAsetRequest;
 use App\Http\Requests\UpdateAsetRequest;
 use App\Http\Resources\AsetResource;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class AsetController extends Controller
 {
@@ -26,16 +27,10 @@ class AsetController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(15);
 
-        return response()->json([
+        return AsetResource::collection($data)->additional([
             'status'  => true,
             'message' => 'Daftar aset berhasil diambil.',
-            'data'    => AsetResource::collection($data),
-            'meta'    => [
-                'current_page' => $data->currentPage(),
-                'last_page'    => $data->lastPage(),
-                'total'        => $data->total(),
-            ],
-        ]);
+        ])->response();
     }
 
     public function store(StoreAsetRequest $request): JsonResponse
@@ -81,6 +76,27 @@ class AsetController extends Controller
         return response()->json([
             'status'  => true,
             'message' => 'Aset berhasil diperbarui.',
+            'data'    => new AsetResource($aset->fresh(['masterBarang', 'kondisi', 'jurusan', 'ruang', 'lokasi'])),
+        ]);
+    }
+
+    public function updateStatus(Request $request, string $id): JsonResponse
+    {
+        $aset = Aset::find($id);
+
+        if (!$aset) {
+            return response()->json(['status' => false, 'message' => 'Aset tidak ditemukan.'], 404);
+        }
+
+        $request->validate([
+            'status' => 'required|in:aktif,non-aktif',
+        ]);
+
+        $aset->update(['status' => $request->status]);
+
+        return response()->json([
+            'status'  => true,
+            'message' => 'Status aset berhasil diperbarui.',
             'data'    => new AsetResource($aset->fresh(['masterBarang', 'kondisi', 'jurusan', 'ruang', 'lokasi'])),
         ]);
     }

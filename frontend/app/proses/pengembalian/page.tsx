@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import api from '@/utils/api';
 import { Loader2, Search, RotateCcw, Eye, X } from 'lucide-react';
+import { formatDate } from '@/lib/utils';
 
 export default function PengembalianPage() {
   const [data, setData] = useState<any[]>([]);
@@ -15,8 +16,9 @@ export default function PengembalianPage() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const res = await api.get('/peminjaman').catch(() => ({ data: { data: [] } }));
-      setData(res.data.data || []);
+      const res = await api.get('/peminjaman?per_page=100').catch(() => ({ data: { data: { data: [] } } }));
+      const items = Array.isArray(res.data.data) ? res.data.data : (res.data.data?.data || []);
+      setData(items);
     } catch (error) {
       console.error('Gagal mengambil data peminjaman', error);
     } finally {
@@ -69,7 +71,7 @@ export default function PengembalianPage() {
             <table className="w-full text-sm text-left">
               <thead className="text-xs text-gray-500 bg-gray-50 border-b border-gray-200 uppercase">
                 <tr>
-                  <th className="px-6 py-4 font-medium">No</th>
+                  <th className="px-6 py-4 font-medium">No.</th>
                   <th className="px-6 py-4 font-medium">Nomor Peminjaman</th>
                   <th className="px-6 py-4 font-medium">Peminjam</th>
                   <th className="px-6 py-4 font-medium">Tgl Pinjam</th>
@@ -88,13 +90,13 @@ export default function PengembalianPage() {
                     <td className="px-6 py-4 text-gray-500">{i + 1}</td>
                     <td className="px-6 py-4 font-medium text-gray-900">{item.nomor_peminjaman}</td>
                     <td className="px-6 py-4 text-gray-900">{item.nama_peminjam}</td>
-                    <td className="px-6 py-4 text-gray-500">{item.tanggal_pinjam || '-'}</td>
+                    <td className="px-6 py-4 text-gray-500">{formatDate(item.tanggal_pinjam)}</td>
                     <td className="px-6 py-4 text-gray-500">{item.lama_pinjam_hari} hari</td>
                     <td className="px-6 py-4">
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">{item.status_peminjaman}</span>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <button onClick={() => { setSelectedItem(item); setIsDetailOpen(true); }} className="text-gray-400 hover:text-blue-600 mr-3 cursor-pointer" title="Detail"><Eye className="h-4 w-4" /></button>
+                      <button onClick={() => { setSelectedItem(item); setIsDetailOpen(true); }} className="text-gray-400 hover:text-blue-600 mr-3 cursor-pointer" title="Rincian"><Eye className="h-4 w-4" /></button>
                       <button onClick={() => handleKembalikan(item.nomor_peminjaman)} disabled={isProcessing === item.nomor_peminjaman} className="inline-flex items-center px-3 py-1.5 bg-green-600 text-white text-xs font-medium rounded-md hover:bg-green-700 disabled:opacity-50 cursor-pointer">
                         {isProcessing === item.nomor_peminjaman ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <RotateCcw className="h-3 w-3 mr-1" />}
                         Kembalikan
@@ -117,7 +119,7 @@ export default function PengembalianPage() {
               <table className="w-full text-sm text-left">
                 <thead className="text-xs text-gray-500 bg-gray-50 border-b border-gray-200 uppercase">
                   <tr>
-                    <th className="px-6 py-4 font-medium">No</th>
+                    <th className="px-6 py-4 font-medium">No.</th>
                     <th className="px-6 py-4 font-medium">Nomor Peminjaman</th>
                     <th className="px-6 py-4 font-medium">Peminjam</th>
                     <th className="px-6 py-4 font-medium">Tgl Pinjam</th>
@@ -130,7 +132,7 @@ export default function PengembalianPage() {
                       <td className="px-6 py-4 text-gray-500">{i + 1}</td>
                       <td className="px-6 py-4 font-medium text-gray-900">{item.nomor_peminjaman}</td>
                       <td className="px-6 py-4 text-gray-900">{item.nama_peminjam}</td>
-                      <td className="px-6 py-4 text-gray-500">{item.tanggal_pinjam || '-'}</td>
+                      <td className="px-6 py-4 text-gray-500">{formatDate(item.tanggal_pinjam)}</td>
                       <td className="px-6 py-4">
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">{item.status_peminjaman}</span>
                       </td>
@@ -156,22 +158,25 @@ export default function PengembalianPage() {
                 ['Nomor Peminjaman', selectedItem.nomor_peminjaman],
                 ['Nama Peminjam', selectedItem.nama_peminjam],
                 ['No. Telepon', selectedItem.nomor_telepon],
-                ['Tanggal Pinjam', selectedItem.tanggal_pinjam],
+                ['Tanggal Pinjam', formatDate(selectedItem.tanggal_pinjam)],
                 ['Lama Pinjam', `${selectedItem.lama_pinjam_hari} hari`],
                 ['Status', selectedItem.status_peminjaman],
                 ['Keterangan', selectedItem.keterangan],
               ].map(([label, value]) => (
                 <div key={label} className="flex justify-between">
                   <span className="text-gray-500">{label}</span>
-                  <span className="text-gray-900 font-medium">{value || '-'}</span>
+                  <span className="text-gray-900 font-medium text-right">{value || '-'}</span>
                 </div>
               ))}
               {selectedItem.detail_peminjaman?.length > 0 && (
                 <div className="pt-2">
                   <span className="text-gray-500 text-xs uppercase tracking-wider">Barang Dipinjam:</span>
-                  <ul className="mt-1 space-y-1">
+                  <ul className="mt-2 space-y-1">
                     {selectedItem.detail_peminjaman.map((d: any, idx: number) => (
-                      <li key={idx} className="text-gray-900">- {d.kode_barang} {d.aset?.master_barang?.nama_barang ? `(${d.aset.master_barang.nama_barang})` : ''}</li>
+                      <li key={idx} className="text-gray-900 bg-gray-50 p-2 rounded-md border border-gray-100 text-xs">
+                        {d.aset?.kode_inventaris || d.kode_barang} - {d.aset?.master_barang?.nama_barang || 'Barang'}
+                        {d.aset?.kondisi?.nama_kondisi ? ` (${d.aset.kondisi.nama_kondisi})` : ''}
+                      </li>
                     ))}
                   </ul>
                 </div>

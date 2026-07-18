@@ -51,8 +51,11 @@ class RuangController extends Controller
      */
     public function index(): JsonResponse
     {
-        $data = Ruang::with('lokasi')->get();
-        return response()->json(['status' => true, 'message' => 'Daftar ruang berhasil diambil.', 'data' => RuangResource::collection($data)]);
+        $data = Ruang::with('lokasi')->paginate(20);
+        return RuangResource::collection($data)->additional([
+            'status'  => true,
+            'message' => 'Daftar ruang berhasil diambil.',
+        ])->response();
     }
 
     /**

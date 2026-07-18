@@ -49,8 +49,11 @@ class RombelController extends Controller
      */
     public function index(): JsonResponse
     {
-        $data = Rombel::with(['jurusan', 'kelas'])->get();
-        return response()->json(['status' => true, 'message' => 'Daftar rombel berhasil diambil.', 'data' => RombelResource::collection($data)]);
+        $data = Rombel::with(['jurusan', 'kelas'])->paginate(20);
+        return RombelResource::collection($data)->additional([
+            'status'  => true,
+            'message' => 'Daftar rombel berhasil diambil.',
+        ])->response();
     }
 
     /**

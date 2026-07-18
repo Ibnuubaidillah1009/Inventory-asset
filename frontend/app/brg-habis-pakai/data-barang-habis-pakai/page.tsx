@@ -1,14 +1,20 @@
 'use client';
 
-export default function Page() {
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { Loader2 } from 'lucide-react';
+
+export default function DataBarangHabisPakaiPage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.replace('/habis-pakai/aset-habis-pakai');
+  }, [router]);
+
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
-      <div>
-        <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">Data Barang Habis Pakai</h1>
-        <p className="text-sm text-gray-500 mt-1">Data barang habis pakai.</p>
-      </div>
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-12 text-center text-gray-500">
-        Halaman ini sedang dalam pengembangan.
+      <div className="flex justify-center items-center py-20">
+        <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
       </div>
     </div>
   );

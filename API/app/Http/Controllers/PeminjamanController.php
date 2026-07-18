@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Peminjaman;
 use App\Models\DetailPeminjaman;
 use App\Http\Requests\StorePeminjamanRequest;
+use App\Http\Resources\PeminjamanResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
@@ -57,13 +58,21 @@ class PeminjamanController extends Controller
      */
     public function index(): JsonResponse
     {
-        $data = Peminjaman::with(['detailPeminjaman.aset'])->get();
+        $data = Peminjaman::with(['detailPeminjaman.aset.masterBarang', 'detailPeminjaman.aset.kondisi'])
+            ->when(request('search'), function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('nomor_peminjaman', 'like', "%{$search}%")
+                      ->orWhere('nama_peminjam', 'like', "%{$search}%")
+                      ->orWhere('status_peminjaman', 'like', "%{$search}%");
+                });
+            })
+            ->orderBy('tanggal_pinjam', 'desc')
+            ->paginate(request('per_page', 15));
 
-        return response()->json([
+        return PeminjamanResource::collection($data)->additional([
             'status'  => true,
             'message' => 'Daftar peminjaman berhasil diambil.',
-            'data'    => $data,
-        ]);
+        ])->response();
     }
 
     /**

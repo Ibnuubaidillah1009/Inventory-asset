@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import api from '@/utils/api';
 import { Plus, Trash2, X, Loader2, Search, Eye, Check } from 'lucide-react';
+import { extractData, formatDate } from '@/lib/utils';
 
 export default function PermintaanBarangPage() {
   const [data, setData] = useState<any[]>([]);
@@ -38,8 +39,8 @@ export default function PermintaanBarangPage() {
         api.get('/master-barang').catch(() => ({ data: { data: [] } })),
       ]);
 
-      setData(resPermintaan.data.data || []);
-      setMasterBarangList(resMaster.data.data || []);
+      setData(extractData(resPermintaan.data.data));
+      setMasterBarangList(extractData(resMaster.data.data));
 
       if (resPermintaan.data.meta) {
         setCurrentPage(resPermintaan.data.meta.current_page);
@@ -179,7 +180,7 @@ export default function PermintaanBarangPage() {
           <table className="w-full text-sm text-left">
             <thead className="text-xs text-gray-500 bg-gray-50 border-b border-gray-200 uppercase">
               <tr>
-                <th className="px-6 py-4 font-medium">No</th>
+                <th className="px-6 py-4 font-medium">No.</th>
                 <th className="px-6 py-4 font-medium">Kode Permintaan</th>
                 <th className="px-6 py-4 font-medium">Tanggal</th>
                 <th className="px-6 py-4 font-medium">Pemohon</th>
@@ -206,7 +207,7 @@ export default function PermintaanBarangPage() {
                   <tr key={item.kode_permintaan || index} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4 text-gray-500">{index + 1}</td>
                     <td className="px-6 py-4 font-medium text-gray-900">{item.kode_permintaan || '-'}</td>
-                    <td className="px-6 py-4 text-gray-500">{item.tanggal_permintaan || '-'}</td>
+                    <td className="px-6 py-4 text-gray-500">{formatDate(item.tanggal_permintaan)}</td>
                     <td className="px-6 py-4 text-gray-900">
                       {item.pengguna?.full_name || item.pengguna?.username || '-'}
                     </td>
@@ -283,7 +284,7 @@ export default function PermintaanBarangPage() {
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">Tanggal Permintaan</label>
-                  <div className="text-gray-900 font-medium bg-gray-50 p-2 rounded-md border border-gray-100">{selectedItem.tanggal_permintaan || '-'}</div>
+                  <div className="text-gray-900 font-medium bg-gray-50 p-2 rounded-md border border-gray-100">{formatDate(selectedItem.tanggal_permintaan)}</div>
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">Pemohon</label>

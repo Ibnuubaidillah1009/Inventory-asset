@@ -1,5 +1,8 @@
 'use client';
 
+import { extractData } from '@/lib/utils';
+
+
 import { useState, useEffect } from 'react';
 import api from '@/utils/api';
 import { Plus, Pencil, Trash2, X, Loader2, Search, Eye } from 'lucide-react';
@@ -25,8 +28,8 @@ export default function StatusBarangPage() {
   const fetchData = async (page = 1, search = searchQuery) => {
     setLoading(true);
     try {
-      const response = await api.get(`/status-barang?page=${page}&search=${encodeURIComponent(search)}`);
-      setData(response.data.data || []);
+      const response = await api.get(`/aset-status?page=${page}&search=${encodeURIComponent(search)}`);
+      setData(extractData(response.data.data));
       if (response.data.meta) {
         setCurrentPage(response.data.meta.current_page);
         setLastPage(response.data.meta.last_page);
@@ -81,9 +84,9 @@ export default function StatusBarangPage() {
     setIsSubmitting(true);
     try {
       if (editingId) {
-        await api.put(`/status-barang/${editingId}`, formData);
+        await api.put(`/aset-status/${editingId}`, formData);
       } else {
-        await api.post('/status-barang', formData);
+        await api.post('/aset-status', formData);
       }
       closeModal();
       fetchData();
@@ -98,7 +101,7 @@ export default function StatusBarangPage() {
   const handleDelete = async (id: number) => {
     if (window.confirm('Apakah Anda yakin ingin menghapus status barang ini?')) {
       try {
-        await api.delete(`/status-barang/${id}`);
+        await api.delete(`/aset-status/${id}`);
         fetchData();
       } catch (error) {
         console.error('Gagal menghapus data', error);
@@ -146,7 +149,7 @@ export default function StatusBarangPage() {
           <table className="w-full text-sm text-left">
             <thead className="text-xs text-gray-500 bg-gray-50 border-b border-gray-200 uppercase">
               <tr>
-                <th className="px-6 py-4 font-medium">No</th>
+                <th className="px-6 py-4 font-medium">No.</th>
                 <th className="px-6 py-4 font-medium">ID Status</th>
                 <th className="px-6 py-4 font-medium">Nama Status</th>
                 <th className="px-6 py-4 font-medium">Keterangan</th>
@@ -177,7 +180,7 @@ export default function StatusBarangPage() {
                       <button onClick={() => openDetailModal(item)} className="text-gray-400 hover:text-blue-600 mr-3 transition-colors cursor-pointer" title="Lihat Detail">
                         <Eye className="h-4 w-4" />
                       </button>
-                      <button onClick={() => openModal(item)} className="text-gray-400 hover:text-gray-900 mr-3 transition-colors cursor-pointer" title="Edit">
+                      <button onClick={() => openModal(item)} className="text-gray-400 hover:text-gray-900 mr-3 transition-colors cursor-pointer" title="Ubah">
                         <Pencil className="h-4 w-4" />
                       </button>
                       <button onClick={() => handleDelete(item.id_status || item.id)} className="text-gray-400 hover:text-red-600 transition-colors cursor-pointer" title="Hapus">

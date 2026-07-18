@@ -1,5 +1,7 @@
 'use client';
 
+import { extractData } from '@/lib/utils';
+
 import { useState, useEffect } from 'react';
 import api from '@/utils/api';
 import { Plus, Pencil, Trash2, X, Loader2, Search, Eye } from 'lucide-react';
@@ -63,14 +65,14 @@ export default function MasterBarangPage() {
         api.get('/satuan')
       ]);
       
-      setData(resMaster.data.data || []);
+      setData(extractData(resMaster.data.data));
       if (resMaster.data.meta) {
         setCurrentPage(resMaster.data.meta.current_page);
         setLastPage(resMaster.data.meta.last_page);
       }
-      setKategoriList(resKategori.data.data || []);
-      setMerekList(resMerek.data.data || []);
-      setSatuanList(resSatuan.data.data || []);
+      setKategoriList(extractData(resKategori.data.data));
+      setMerekList(extractData(resMerek.data.data));
+      setSatuanList(extractData(resSatuan.data.data));
     } catch (error) {
       console.error('Gagal mengambil data master barang', error);
     } finally {
@@ -204,7 +206,7 @@ export default function MasterBarangPage() {
           <table className="w-full text-sm text-left">
             <thead className="text-xs text-gray-500 bg-gray-50 border-b border-gray-200 uppercase">
               <tr>
-                <th className="px-6 py-4 font-medium">No</th>
+                <th className="px-6 py-4 font-medium">No.</th>
                 <th className="px-6 py-4 font-medium">Kode Barang</th>
                 <th className="px-6 py-4 font-medium">Nama Barang</th>
                 <th className="px-6 py-4 font-medium">Kategori</th>
@@ -237,7 +239,7 @@ export default function MasterBarangPage() {
                       <button onClick={() => openDetailModal(item)} className="text-gray-400 hover:text-blue-600 mr-3 transition-colors cursor-pointer" title="Lihat Detail">
                         <Eye className="h-4 w-4" />
                       </button>
-                      <button onClick={() => openModal(item)} className="text-gray-400 hover:text-gray-900 mr-3 transition-colors cursor-pointer" title="Edit">
+                      <button onClick={() => openModal(item)} className="text-gray-400 hover:text-gray-900 mr-3 transition-colors cursor-pointer" title="Ubah">
                         <Pencil className="h-4 w-4" />
                       </button>
                       <button onClick={() => handleDelete(item.id_master_barang)} className="text-gray-400 hover:text-red-600 transition-colors cursor-pointer" title="Hapus">

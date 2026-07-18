@@ -48,12 +48,11 @@ class SatuanController extends Controller
      */
     public function index(): JsonResponse
     {
-        $satuan = Satuan::all();
-        return response()->json([
+        $satuan = Satuan::paginate(20);
+        return SatuanResource::collection($satuan)->additional([
             'status'  => true,
             'message' => 'Daftar satuan berhasil diambil.',
-            'data'    => SatuanResource::collection($satuan),
-        ]);
+        ])->response();
     }
 
     /**
