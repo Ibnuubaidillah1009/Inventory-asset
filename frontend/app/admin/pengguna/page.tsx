@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2, X, Loader2, Search } from 'lucide-react';
+import { Plus, Trash2, X, Loader2, Search } from 'lucide-react';
 import api from '@/utils/api';
 
 import { toast } from 'sonner';
+import DropdownMenu from '@/app/components/DropdownMenu';
 
 interface Peran {
   id_peran: number;
@@ -54,8 +55,7 @@ export default function ManajemenPengguna() {
     id_pengguna: 0,
     username: '',
     password: '',
-    id_peran: '',
-  });
+    id_peran: '' });
 
   const fetchApiData = async (page = 1, search = searchQuery) => {
     try {
@@ -97,8 +97,7 @@ export default function ManajemenPengguna() {
         id_pengguna: data.id_pengguna,
         username: data.username,
         password: '', // Kosongkan saat edit kecuali ingin diubah
-        id_peran: data.id_peran.toString(),
-      });
+        id_peran: data.id_peran.toString() });
     } else {
       setFormData({ id_pengguna: 0, username: '', password: '', id_peran: '' });
     }
@@ -115,8 +114,7 @@ export default function ManajemenPengguna() {
     try {
       const payload: Record<string, string | number> = {
         username: formData.username,
-        id_peran: formData.id_peran,
-      };
+        id_peran: formData.id_peran };
       
       if (formData.password) {
         payload.password = formData.password;
@@ -226,22 +224,9 @@ export default function ManajemenPengguna() {
                     <td className="px-6 py-4 text-gray-600">{item.mapel?.nama_mapel || '-'}</td>
                     <td className="px-6 py-4 text-gray-600">{item.unit?.nama_unit || '-'}</td>
                     <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => handleOpenModal('edit', item)}
-                          className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                          title="Ubah"
-                        >
-                          <Pencil className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(item.id_pengguna)}
-                          className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          title="Hapus"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
+                                          <DropdownMenu actions={[
+                      { label: 'Hapus', icon: Trash2, onClick: () => handleDelete(item.id_pengguna), variant: 'danger' },
+                    ]} />
                     </td>
                   </tr>
                 ))

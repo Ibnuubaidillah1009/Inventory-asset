@@ -6,6 +6,7 @@ import { Plus, Trash2, X, Loader2, Search, Eye, Check } from 'lucide-react';
 import { extractData, formatDate } from '@/lib/utils';
 
 import { toast } from 'sonner';
+import DropdownMenu from '@/app/components/DropdownMenu';
 
 export default function PermintaanBarangPage() {
   const [data, setData] = useState<any[]>([]);
@@ -25,13 +26,11 @@ export default function PermintaanBarangPage() {
     id_master_barang: '',
     jumlah_diminta: '',
     alasan_kebutuhan: '',
-    keterangan_keperluan: '',
-  });
+    keterangan_keperluan: '' });
 
   const [keputusanData, setKeputusanData] = useState({
     status_persetujuan: 'disetujui',
-    alasan_disetujui: '',
-  });
+    alasan_disetujui: '' });
 
   const fetchData = async (page = 1, search = searchQuery) => {
     setLoading(true);
@@ -68,8 +67,7 @@ export default function PermintaanBarangPage() {
       id_master_barang: '',
       jumlah_diminta: '',
       alasan_kebutuhan: '',
-      keterangan_keperluan: '',
-    });
+      keterangan_keperluan: '' });
     setIsModalOpen(true);
   };
 
@@ -106,8 +104,7 @@ export default function PermintaanBarangPage() {
         id_master_barang: Number(formData.id_master_barang),
         jumlah_diminta: Number(formData.jumlah_diminta),
         alasan_kebutuhan: formData.alasan_kebutuhan,
-        keterangan_keperluan: formData.keterangan_keperluan || null,
-      });
+        keterangan_keperluan: formData.keterangan_keperluan || null });
       toast.success('Data berhasil disimpan');
       closeModal();
       fetchData();
@@ -228,19 +225,10 @@ export default function PermintaanBarangPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <button onClick={() => openDetailModal(item)} className="text-gray-400 hover:text-blue-600 mr-3 transition-colors cursor-pointer" title="Lihat Detail">
-                        <Eye className="h-4 w-4" />
-                      </button>
-                      {item.status_persetujuan === 'diproses' && (
-                        <>
-                          <button onClick={() => openKeputusanModal(item.kode_permintaan)} className="text-gray-400 hover:text-green-600 mr-3 transition-colors cursor-pointer" title="Proses Keputusan">
-                            <Check className="h-4 w-4" />
-                          </button>
-                          <button onClick={() => handleDelete(item.kode_permintaan)} className="text-gray-400 hover:text-red-600 transition-colors cursor-pointer" title="Hapus">
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </>
-                      )}
+                                          <DropdownMenu actions={[
+                      { label: 'Lihat Detail', icon: Eye, onClick: () => openDetailModal(item), variant: 'default' },
+                      { label: 'Hapus', icon: Trash2, onClick: () => handleDelete(item.kode_permintaan), variant: 'danger' },
+                    ]} />
                     </td>
                   </tr>
                 ))

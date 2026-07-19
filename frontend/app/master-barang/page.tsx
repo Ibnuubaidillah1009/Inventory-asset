@@ -7,6 +7,7 @@ import api from '@/utils/api';
 import { Plus, Pencil, Trash2, X, Loader2, Search } from 'lucide-react';
 
 import { toast } from 'sonner';
+import DropdownMenu from '@/app/components/DropdownMenu';
 
 export default function MasterBarangPage() {
   const [data, setData] = useState<any[]>([]);
@@ -27,8 +28,7 @@ export default function MasterBarangPage() {
     id_merek: '',
     id_satuan: '',
     jenis_barang: 'Aset Tetap',
-    keterangan: '',
-  });
+    keterangan: '' });
 
   const fetchData = async (page = 1, search = searchQuery) => {
     setLoading(true);
@@ -76,8 +76,7 @@ export default function MasterBarangPage() {
         id_merek: item.id_merek || '',
         id_satuan: item.id_satuan || '',
         jenis_barang: item.jenis_barang || 'Aset Tetap',
-        keterangan: item.keterangan || '',
-      });
+        keterangan: item.keterangan || '' });
     } else {
       setEditingId(null);
       setFormData({
@@ -86,8 +85,7 @@ export default function MasterBarangPage() {
         id_merek: '',
         id_satuan: '',
         jenis_barang: 'Aset Tetap',
-        keterangan: '',
-      });
+        keterangan: '' });
     }
     setIsModalOpen(true);
   };
@@ -105,8 +103,7 @@ export default function MasterBarangPage() {
         ...formData,
         id_kategori: formData.id_kategori ? Number(formData.id_kategori) : null,
         id_merek: formData.id_merek ? Number(formData.id_merek) : null,
-        id_satuan: formData.id_satuan ? Number(formData.id_satuan) : null,
-      };
+        id_satuan: formData.id_satuan ? Number(formData.id_satuan) : null };
 
       if (editingId) {
         await api.put(`/master-barang/${editingId}`, payload);
@@ -208,20 +205,10 @@ export default function MasterBarangPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <button
-                        onClick={() => openModal(item)}
-                        className="text-gray-400 hover:text-gray-900 mr-3 transition-colors cursor-pointer"
-                        title="Ubah"
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(item.id_master_barang)}
-                        className="text-gray-400 hover:text-red-600 transition-colors cursor-pointer"
-                        title="Hapus"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                                          <DropdownMenu actions={[
+                      { label: 'Ubah', icon: Pencil, onClick: () => openModal(item), variant: 'default' },
+                      { label: 'Hapus', icon: Trash2, onClick: () => handleDelete(item.id_master_barang), variant: 'danger' },
+                    ]} />
                     </td>
                   </tr>
                 ))

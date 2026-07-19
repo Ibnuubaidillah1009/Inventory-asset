@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import api from '@/utils/api';
-import { Loader2, Search, RotateCcw, Eye, X } from 'lucide-react';
+import { Loader2, Search, RotateCcw, X } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 
 import { toast } from 'sonner';
+import DropdownMenu from '@/app/components/DropdownMenu';
 
 export default function PengembalianPage() {
   const [data, setData] = useState<any[]>([]);
@@ -99,11 +100,9 @@ export default function PengembalianPage() {
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">{item.status_peminjaman}</span>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <button onClick={() => { setSelectedItem(item); setIsDetailOpen(true); }} className="text-gray-400 hover:text-blue-600 mr-3 cursor-pointer" title="Rincian"><Eye className="h-4 w-4" /></button>
-                      <button onClick={() => handleKembalikan(item.nomor_peminjaman)} disabled={isProcessing === item.nomor_peminjaman} className="inline-flex items-center px-3 py-1.5 bg-green-600 text-white text-xs font-medium rounded-md hover:bg-green-700 disabled:opacity-50 cursor-pointer">
-                        {isProcessing === item.nomor_peminjaman ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <RotateCcw className="h-3 w-3 mr-1" />}
-                        Kembalikan
-                      </button>
+                                          <DropdownMenu actions={[
+                      { label: 'Kembalikan', icon: RotateCcw, onClick: () => handleKembalikan(item.nomor_peminjaman), variant: 'success' },
+                    ]} />
                     </td>
                   </tr>
                 ))}

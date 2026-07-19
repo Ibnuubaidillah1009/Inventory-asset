@@ -6,6 +6,7 @@ import { Plus, Pencil, Trash2, X, Loader2, Search, ClipboardCheck } from 'lucide
 import { extractData, formatDate } from '@/lib/utils';
 
 import { toast } from 'sonner';
+import DropdownMenu from '@/app/components/DropdownMenu';
 
 export default function ProsesOpnamePage() {
   const [data, setData] = useState<any[]>([]);
@@ -21,8 +22,7 @@ export default function ProsesOpnamePage() {
     kode_inventaris: '',
     tanggal_opname: '',
     id_kondisi: '',
-    keterangan: '',
-  };
+    keterangan: '' };
   const [formData, setFormData] = useState(emptyForm);
 
   const fetchData = async (search = searchQuery) => {
@@ -55,8 +55,7 @@ export default function ProsesOpnamePage() {
         kode_inventaris: item.kode_inventaris || '',
         tanggal_opname: item.tanggal_opname || '',
         id_kondisi: item.id_kondisi || '',
-        keterangan: item.keterangan || '',
-      });
+        keterangan: item.keterangan || '' });
     } else {
       setEditingId(null);
       setFormData({ ...emptyForm, tanggal_opname: new Date().toISOString().split('T')[0] });
@@ -72,8 +71,7 @@ export default function ProsesOpnamePage() {
     try {
       const payload: any = {
         kode_inventaris: formData.kode_inventaris,
-        tanggal_opname: formData.tanggal_opname,
-      };
+        tanggal_opname: formData.tanggal_opname };
       if (formData.id_kondisi) payload.id_kondisi = Number(formData.id_kondisi);
       if (formData.keterangan) payload.keterangan = formData.keterangan;
 
@@ -149,8 +147,10 @@ export default function ProsesOpnamePage() {
                   <td className="px-6 py-4 text-gray-500">{item.kondisi?.nama_kondisi || '-'}</td>
                   <td className="px-6 py-4 text-gray-500 max-w-xs truncate">{item.keterangan || '-'}</td>
                   <td className="px-6 py-4 text-right">
-                    <button onClick={() => openModal(item)} className="text-gray-400 hover:text-gray-900 mr-3 cursor-pointer" title="Ubah"><Pencil className="h-4 w-4" /></button>
-                    <button onClick={() => handleDelete(item.id_opname_aset)} className="text-gray-400 hover:text-red-600 cursor-pointer" title="Hapus"><Trash2 className="h-4 w-4" /></button>
+                                      <DropdownMenu actions={[
+                    { label: 'Ubah', icon: Pencil, onClick: () => openModal(item), variant: 'default' },
+                    { label: 'Hapus', icon: Trash2, onClick: () => handleDelete(item.id_opname_aset), variant: 'danger' },
+                  ]} />
                   </td>
                 </tr>
               ))}

@@ -7,6 +7,7 @@ import api from '@/utils/api';
 import { Plus, Pencil, Trash2, X, Loader2, Search, Eye } from 'lucide-react';
 
 import { toast } from 'sonner';
+import DropdownMenu from '@/app/components/DropdownMenu';
 
 export default function RuangPage() {
   const [data, setData] = useState<any[]>([]);
@@ -24,8 +25,7 @@ export default function RuangPage() {
   // Form State
   const [formData, setFormData] = useState({
     id_lokasi: '',
-    nama_ruang: '',
-  });
+    nama_ruang: '' });
 
   const fetchData = async (page = 1, search = searchQuery) => {
     setLoading(true);
@@ -62,8 +62,7 @@ export default function RuangPage() {
       setEditingId(item.id_ruang || item.id);
       setFormData({
         id_lokasi: item.id_lokasi || '',
-        nama_ruang: item.nama_ruang || '',
-      });
+        nama_ruang: item.nama_ruang || '' });
     } else {
       setEditingId(null);
       setFormData({ id_lokasi: '', nama_ruang: '' });
@@ -186,15 +185,11 @@ export default function RuangPage() {
                     <td className="px-6 py-4 text-gray-900">{item.nama_ruang}</td>
                     <td className="px-6 py-4 text-gray-500">{item.lokasi?.nama_lokasi || '-'}</td>
                     <td className="px-6 py-4 text-right">
-                      <button onClick={() => openDetailModal(item)} className="text-gray-400 hover:text-blue-600 mr-3 transition-colors cursor-pointer" title="Lihat Detail">
-                        <Eye className="h-4 w-4" />
-                      </button>
-                      <button onClick={() => openModal(item)} className="text-gray-400 hover:text-gray-900 mr-3 transition-colors cursor-pointer" title="Ubah">
-                        <Pencil className="h-4 w-4" />
-                      </button>
-                      <button onClick={() => handleDelete(item.id_ruang || item.id)} className="text-gray-400 hover:text-red-600 transition-colors cursor-pointer" title="Hapus">
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                                          <DropdownMenu actions={[
+                      { label: 'Lihat Detail', icon: Eye, onClick: () => openDetailModal(item), variant: 'default' },
+                      { label: 'Ubah', icon: Pencil, onClick: () => openModal(item), variant: 'default' },
+                      { label: 'Hapus', icon: Trash2, onClick: () => handleDelete(item.id_ruang || item.id), variant: 'danger' },
+                    ]} />
                     </td>
                   </tr>
                 ))

@@ -8,18 +8,17 @@ import api from '@/utils/api';
 import { Plus, Pencil, Trash2, X, Loader2, Search, Eye } from 'lucide-react';
 
 import { toast } from 'sonner';
+import DropdownMenu from '@/app/components/DropdownMenu';
 
 const statusBadge: Record<string, string> = {
   dilaporkan: 'bg-red-100 text-red-800',
   dalam_perbaikan: 'bg-yellow-100 text-yellow-800',
-  selesai: 'bg-green-100 text-green-800',
-};
+  selesai: 'bg-green-100 text-green-800' };
 
 const statusLabel: Record<string, string> = {
   dilaporkan: 'Dilaporkan',
   dalam_perbaikan: 'Dalam Perbaikan',
-  selesai: 'Selesai',
-};
+  selesai: 'Selesai' };
 
 export default function KerusakanPage() {
   const [data, setData] = useState<any[]>([]);
@@ -38,8 +37,7 @@ export default function KerusakanPage() {
     tanggal_lapor: '',
     kondisi: '',
     keterangan: '',
-    status: 'dilaporkan',
-  });
+    status: 'dilaporkan' });
 
   const inputClass = "w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900 bg-white";
 
@@ -63,8 +61,7 @@ export default function KerusakanPage() {
         tanggal_lapor: item.tanggal_lapor || '',
         kondisi: item.kondisi || '',
         keterangan: item.keterangan || '',
-        status: item.status || 'dilaporkan',
-      });
+        status: item.status || 'dilaporkan' });
     } else {
       setEditingId(null);
       setFormData({ kode_barang: '', tanggal_lapor: new Date().toISOString().split('T')[0], kondisi: '', keterangan: '', status: 'dilaporkan' });
@@ -160,9 +157,11 @@ export default function KerusakanPage() {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <button onClick={() => openDetailModal(item)} className="text-gray-400 hover:text-blue-600 mr-3 transition-colors cursor-pointer" title="Lihat Detail"><Eye className="h-4 w-4" /></button>
-                    <button onClick={() => openModal(item)} className="text-gray-400 hover:text-gray-900 mr-3 transition-colors cursor-pointer" title="Ubah"><Pencil className="h-4 w-4" /></button>
-                    <button onClick={() => handleDelete(item.id)} className="text-gray-400 hover:text-red-600 transition-colors cursor-pointer" title="Hapus"><Trash2 className="h-4 w-4" /></button>
+                                      <DropdownMenu actions={[
+                    { label: 'Lihat Detail', icon: Eye, onClick: () => openDetailModal(item), variant: 'default' },
+                    { label: 'Ubah', icon: Pencil, onClick: () => openModal(item), variant: 'default' },
+                    { label: 'Hapus', icon: Trash2, onClick: () => handleDelete(item.id), variant: 'danger' },
+                  ]} />
                   </td>
                 </tr>
               ))}

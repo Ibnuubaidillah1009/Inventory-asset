@@ -6,6 +6,7 @@ import { Plus, Pencil, Trash2, X, Loader2, Search, Eye } from 'lucide-react';
 import { extractData, formatDate } from '@/lib/utils';
 
 import { toast } from 'sonner';
+import DropdownMenu from '@/app/components/DropdownMenu';
 
 export default function InputTanahPage() {
   const [data, setData] = useState<any[]>([]);
@@ -31,8 +32,7 @@ export default function InputTanahPage() {
     nilai_aset: '',
     penggunaan: '',
     tanggal_perolehan: '',
-    sumber_perolehan: '',
-  });
+    sumber_perolehan: '' });
 
   const fetchData = async (page = 1, search = searchQuery) => {
     setLoading(true);
@@ -79,8 +79,7 @@ export default function InputTanahPage() {
         nilai_aset: item.aset_tanah?.nilai_aset || item.nilai_aset || '',
         penggunaan: item.aset_tanah?.penggunaan || item.penggunaan || '',
         tanggal_perolehan: item.aset_tanah?.tanggal_perolehan || item.tanggal_perolehan || '',
-        sumber_perolehan: item.aset_tanah?.sumber_perolehan || item.sumber_perolehan || '',
-      });
+        sumber_perolehan: item.aset_tanah?.sumber_perolehan || item.sumber_perolehan || '' });
     } else {
       setEditingId(null);
       setFormData({
@@ -94,8 +93,7 @@ export default function InputTanahPage() {
         nilai_aset: '',
         penggunaan: '',
         tanggal_perolehan: '',
-        sumber_perolehan: '',
-      });
+        sumber_perolehan: '' });
     }
     setIsModalOpen(true);
   };
@@ -129,8 +127,7 @@ export default function InputTanahPage() {
         nilai_aset: formData.nilai_aset ? Number(formData.nilai_aset) : null,
         penggunaan: formData.penggunaan,
         tanggal_perolehan: formData.tanggal_perolehan || null,
-        sumber_perolehan: formData.sumber_perolehan,
-      };
+        sumber_perolehan: formData.sumber_perolehan };
 
       if (editingId) {
         await api.put(`/aset/${editingId}`, { keterangan: JSON.stringify(payload) });
@@ -139,8 +136,7 @@ export default function InputTanahPage() {
           kode_inventaris: formData.kode_inventaris,
           id_master_barang: 1,
           status: 'Aktif',
-          keterangan: JSON.stringify(payload),
-        });
+          keterangan: JSON.stringify(payload) });
       }
       toast.success('Data berhasil disimpan');
       closeModal();
@@ -170,8 +166,7 @@ export default function InputTanahPage() {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
       currency: 'IDR',
-      minimumFractionDigits: 0,
-    }).format(value);
+      minimumFractionDigits: 0 }).format(value);
   };
 
   return (
@@ -246,15 +241,11 @@ export default function InputTanahPage() {
                       {item.aset_tanah?.status_hak || item.status_hak || '-'}
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <button onClick={() => openDetailModal(item)} className="text-gray-400 hover:text-blue-600 mr-3 transition-colors cursor-pointer" title="Lihat Detail">
-                        <Eye className="h-4 w-4" />
-                      </button>
-                      <button onClick={() => openModal(item)} className="text-gray-400 hover:text-gray-900 mr-3 transition-colors cursor-pointer" title="Ubah">
-                        <Pencil className="h-4 w-4" />
-                      </button>
-                      <button onClick={() => handleDelete(item.kode_barang)} className="text-gray-400 hover:text-red-600 transition-colors cursor-pointer" title="Hapus">
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                                          <DropdownMenu actions={[
+                      { label: 'Lihat Detail', icon: Eye, onClick: () => openDetailModal(item), variant: 'default' },
+                      { label: 'Ubah', icon: Pencil, onClick: () => openModal(item), variant: 'default' },
+                      { label: 'Hapus', icon: Trash2, onClick: () => handleDelete(item.kode_barang), variant: 'danger' },
+                    ]} />
                     </td>
                   </tr>
                 ))

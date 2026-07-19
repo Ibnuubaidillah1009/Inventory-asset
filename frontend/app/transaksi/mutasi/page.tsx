@@ -8,16 +8,15 @@ import api from '@/utils/api';
 import { Plus, Pencil, Trash2, X, Loader2, Search, Eye } from 'lucide-react';
 
 import { toast } from 'sonner';
+import DropdownMenu from '@/app/components/DropdownMenu';
 
 const statusBadge: Record<string, string> = {
   diproses: 'bg-yellow-100 text-yellow-800',
-  selesai: 'bg-green-100 text-green-800',
-};
+  selesai: 'bg-green-100 text-green-800' };
 
 const statusLabel: Record<string, string> = {
   diproses: 'Diproses',
-  selesai: 'Selesai',
-};
+  selesai: 'Selesai' };
 
 export default function MutasiPage() {
   const [data, setData] = useState<any[]>([]);
@@ -37,8 +36,7 @@ export default function MutasiPage() {
     ke_ruang: '',
     tanggal_mutasi: '',
     keterangan: '',
-    status: 'diproses',
-  });
+    status: 'diproses' });
 
   const inputClass = "w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900 bg-white";
 
@@ -63,8 +61,7 @@ export default function MutasiPage() {
         ke_ruang: item.ke_ruang || '',
         tanggal_mutasi: item.tanggal_mutasi || '',
         keterangan: item.keterangan || '',
-        status: item.status || 'diproses',
-      });
+        status: item.status || 'diproses' });
     } else {
       setEditingId(null);
       setFormData({ kode_barang: '', dari_ruang: '', ke_ruang: '', tanggal_mutasi: new Date().toISOString().split('T')[0], keterangan: '', status: 'diproses' });
@@ -160,9 +157,11 @@ export default function MutasiPage() {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <button onClick={() => openDetailModal(item)} className="text-gray-400 hover:text-blue-600 mr-3 transition-colors cursor-pointer" title="Lihat Detail"><Eye className="h-4 w-4" /></button>
-                    <button onClick={() => openModal(item)} className="text-gray-400 hover:text-gray-900 mr-3 transition-colors cursor-pointer" title="Ubah"><Pencil className="h-4 w-4" /></button>
-                    <button onClick={() => handleDelete(item.id)} className="text-gray-400 hover:text-red-600 transition-colors cursor-pointer" title="Hapus"><Trash2 className="h-4 w-4" /></button>
+                                      <DropdownMenu actions={[
+                    { label: 'Lihat Detail', icon: Eye, onClick: () => openDetailModal(item), variant: 'default' },
+                    { label: 'Ubah', icon: Pencil, onClick: () => openModal(item), variant: 'default' },
+                    { label: 'Hapus', icon: Trash2, onClick: () => handleDelete(item.id), variant: 'danger' },
+                  ]} />
                   </td>
                 </tr>
               ))}

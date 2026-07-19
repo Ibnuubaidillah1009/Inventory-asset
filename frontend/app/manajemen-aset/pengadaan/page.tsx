@@ -6,6 +6,7 @@ import { extractData, formatDate } from '@/lib/utils';
 import { Plus, Pencil, Trash2, X, Loader2, Search, Eye } from 'lucide-react';
 
 import { toast } from 'sonner';
+import DropdownMenu from '@/app/components/DropdownMenu';
 
 export default function PengadaanPage() {
   const [data, setData] = useState<any[]>([]);
@@ -32,8 +33,7 @@ export default function PengadaanPage() {
     keterangan: '',
     sumber_perolehan: '',
     tanggal_pengiriman: '',
-    status: 'diproses',
-  };
+    status: 'diproses' };
 
   const [formData, setFormData] = useState(emptyForm);
 
@@ -81,8 +81,7 @@ export default function PengadaanPage() {
         keterangan: item.keterangan || '',
         sumber_perolehan: item.sumber_perolehan || '',
         tanggal_pengiriman: item.tanggal_pengiriman || '',
-        status: item.status || 'diproses',
-      });
+        status: item.status || 'diproses' });
     } else {
       setEditingId(null);
       const today = new Date().toISOString().split('T')[0];
@@ -128,8 +127,7 @@ export default function PengadaanPage() {
 
       const payload: any = {
         tanggal_pengadaan: formData.tanggal_pengadaan,
-        status: formData.status,
-      };
+        status: formData.status };
       if (formData.nomor_po) payload.nomor_po = formData.nomor_po;
       if (formData.nomor_faktur) payload.nomor_faktur = formData.nomor_faktur;
       if (pemasokId) payload.id_pemasok = pemasokId;
@@ -175,8 +173,7 @@ export default function PengadaanPage() {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
       currency: 'IDR',
-      minimumFractionDigits: 0,
-    }).format(value);
+      minimumFractionDigits: 0 }).format(value);
   };
 
   const inputClass = "w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900 bg-white";
@@ -259,15 +256,11 @@ export default function PengadaanPage() {
                       </span>
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <button onClick={() => openDetailModal(item)} className="text-gray-400 hover:text-blue-600 mr-3 transition-colors cursor-pointer" title="Lihat Detail">
-                        <Eye className="h-4 w-4" />
-                      </button>
-                      <button onClick={() => openModal(item)} className="text-gray-400 hover:text-gray-900 mr-3 transition-colors cursor-pointer" title="Ubah">
-                        <Pencil className="h-4 w-4" />
-                      </button>
-                      <button onClick={() => handleDelete(item.id_pengadaan || item.id)} className="text-gray-400 hover:text-red-600 transition-colors cursor-pointer" title="Hapus">
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                                          <DropdownMenu actions={[
+                      { label: 'Lihat Detail', icon: Eye, onClick: () => openDetailModal(item), variant: 'default' },
+                      { label: 'Ubah', icon: Pencil, onClick: () => openModal(item), variant: 'default' },
+                      { label: 'Hapus', icon: Trash2, onClick: () => handleDelete(item.id_pengadaan || item.id), variant: 'danger' },
+                    ]} />
                     </td>
                   </tr>
                 ))

@@ -7,6 +7,7 @@ import api from '@/utils/api';
 import { Plus, Pencil, Trash2, X, Loader2, Search } from 'lucide-react';
 
 import { toast } from 'sonner';
+import DropdownMenu from '@/app/components/DropdownMenu';
 
 export default function MapelPage() {
   const [data, setData] = useState<any[]>([]);
@@ -19,8 +20,7 @@ export default function MapelPage() {
   const [lastPage, setLastPage] = useState(1);
 
   const [formData, setFormData] = useState({
-    nama_mapel: '',
-  });
+    nama_mapel: '' });
 
   const fetchData = async (page = 1, search = searchQuery) => {
     setLoading(true);
@@ -55,13 +55,11 @@ export default function MapelPage() {
     if (item) {
       setEditingId(item.id_mapel);
       setFormData({
-        nama_mapel: item.nama_mapel || '',
-      });
+        nama_mapel: item.nama_mapel || '' });
     } else {
       setEditingId(null);
       setFormData({
-        nama_mapel: '',
-      });
+        nama_mapel: '' });
     }
     setIsModalOpen(true);
   };
@@ -163,20 +161,10 @@ export default function MapelPage() {
                     <td className="px-6 py-4 text-gray-500">{(currentPage - 1) * 10 + index + 1}</td>
                     <td className="px-6 py-4 font-medium text-gray-900">{item.nama_mapel || '-'}</td>
                     <td className="px-6 py-4 text-right">
-                      <button
-                        onClick={() => openModal(item)}
-                        className="text-gray-400 hover:text-gray-900 mr-3 transition-colors cursor-pointer"
-                        title="Ubah"
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(item.id_mapel)}
-                        className="text-gray-400 hover:text-red-600 transition-colors cursor-pointer"
-                        title="Hapus"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                                          <DropdownMenu actions={[
+                      { label: 'Ubah', icon: Pencil, onClick: () => openModal(item), variant: 'default' },
+                      { label: 'Hapus', icon: Trash2, onClick: () => handleDelete(item.id_mapel), variant: 'danger' },
+                    ]} />
                     </td>
                   </tr>
                 ))

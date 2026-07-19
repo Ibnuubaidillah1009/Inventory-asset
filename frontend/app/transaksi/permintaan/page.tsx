@@ -3,21 +3,20 @@
 import { useState, useEffect } from 'react';
 import api from '@/utils/api';
 import { formatDate } from '@/lib/utils';
-import { Plus, Trash2, X, Loader2, Search, Eye, CheckCircle, XCircle } from 'lucide-react';
+import { Plus, Trash2, X, Loader2, Search, Eye, XCircle } from 'lucide-react';
 
 import { toast } from 'sonner';
+import DropdownMenu from '@/app/components/DropdownMenu';
 
 const statusBadge: Record<string, string> = {
   Menunggu: 'bg-yellow-100 text-yellow-800',
   Disetujui: 'bg-green-100 text-green-800',
-  Ditolak: 'bg-red-100 text-red-800',
-};
+  Ditolak: 'bg-red-100 text-red-800' };
 
 const statusLabel: Record<string, string> = {
   Menunggu: 'Menunggu',
   Disetujui: 'Disetujui',
-  Ditolak: 'Ditolak',
-};
+  Ditolak: 'Ditolak' };
 
 export default function PermintaanPage() {
   const [data, setData] = useState<any[]>([]);
@@ -120,14 +119,10 @@ export default function PermintaanPage() {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <button onClick={() => openDetailModal(item)} className="text-gray-400 hover:text-blue-600 mr-2 transition-colors cursor-pointer" title="Lihat Detail"><Eye className="h-4 w-4" /></button>
-                    {item.status_persetujuan === 'Menunggu' && (
-                      <>
-                        <button onClick={() => handleKeputusan(item.kode_permintaan, 'disetujui')} disabled={isSubmitting} className="text-gray-400 hover:text-green-600 mr-2 transition-colors cursor-pointer" title="Setujui"><CheckCircle className="h-4 w-4" /></button>
-                        <button onClick={() => handleKeputusan(item.kode_permintaan, 'ditolak')} disabled={isSubmitting} className="text-gray-400 hover:text-red-600 mr-2 transition-colors cursor-pointer" title="Tolak"><XCircle className="h-4 w-4" /></button>
-                      </>
-                    )}
-                    <button onClick={() => handleDelete(item.kode_permintaan)} className="text-gray-400 hover:text-red-600 transition-colors cursor-pointer" title="Hapus"><Trash2 className="h-4 w-4" /></button>
+                                      <DropdownMenu actions={[
+                    { label: 'Lihat Detail', icon: Eye, onClick: () => openDetailModal(item), variant: 'default' },
+                    { label: 'Hapus', icon: Trash2, onClick: () => handleDelete(item.kode_permintaan), variant: 'danger' },
+                  ]} />
                   </td>
                 </tr>
               ))}

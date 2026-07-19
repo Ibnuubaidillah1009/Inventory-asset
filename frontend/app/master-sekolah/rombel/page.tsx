@@ -7,6 +7,7 @@ import api from '@/utils/api';
 import { Plus, Pencil, Trash2, X, Loader2, Search } from 'lucide-react';
 
 import { toast } from 'sonner';
+import DropdownMenu from '@/app/components/DropdownMenu';
 
 export default function RombelPage() {
   const [data, setData] = useState<any[]>([]);
@@ -24,8 +25,7 @@ export default function RombelPage() {
     nama: '',
     tingkat: '10',
     is_active: true,
-    id_jurusan: '',
-  });
+    id_jurusan: '' });
 
   const fetchData = async (page = 1, search = searchQuery) => {
     setLoading(true);
@@ -68,8 +68,7 @@ export default function RombelPage() {
         nama: item.nama || '',
         tingkat: item.tingkat || '10',
         is_active: item.is_active ?? true,
-        id_jurusan: item.id_jurusan || '',
-      });
+        id_jurusan: item.id_jurusan || '' });
     } else {
       setEditingId(null);
       setFormData({
@@ -77,8 +76,7 @@ export default function RombelPage() {
         nama: '',
         tingkat: '10',
         is_active: true,
-        id_jurusan: '',
-      });
+        id_jurusan: '' });
     }
     setIsModalOpen(true);
   };
@@ -94,8 +92,7 @@ export default function RombelPage() {
     try {
       const payload = {
         ...formData,
-        id_jurusan: formData.id_jurusan ? Number(formData.id_jurusan) : null,
-      };
+        id_jurusan: formData.id_jurusan ? Number(formData.id_jurusan) : null };
 
       if (editingId) {
         await api.put(`/rombel/${editingId}`, payload);
@@ -201,20 +198,10 @@ export default function RombelPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <button
-                        onClick={() => openModal(item)}
-                        className="text-gray-400 hover:text-gray-900 mr-3 transition-colors cursor-pointer"
-                        title="Ubah"
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(item.id_rombel)}
-                        className="text-gray-400 hover:text-red-600 transition-colors cursor-pointer"
-                        title="Hapus"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                                          <DropdownMenu actions={[
+                      { label: 'Ubah', icon: Pencil, onClick: () => openModal(item), variant: 'default' },
+                      { label: 'Hapus', icon: Trash2, onClick: () => handleDelete(item.id_rombel), variant: 'danger' },
+                    ]} />
                     </td>
                   </tr>
                 ))

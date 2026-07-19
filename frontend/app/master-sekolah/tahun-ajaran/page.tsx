@@ -8,6 +8,7 @@ import api from '@/utils/api';
 import { Plus, Pencil, Trash2, X, Loader2, Search, CheckCircle } from 'lucide-react';
 
 import { toast } from 'sonner';
+import DropdownMenu from '@/app/components/DropdownMenu';
 
 export default function TahunAjaranPage() {
   const [data, setData] = useState<any[]>([]);
@@ -21,8 +22,7 @@ export default function TahunAjaranPage() {
 
   const [formData, setFormData] = useState({
     tahun_ajaran: '',
-    status: 'non-aktif',
-  });
+    status: 'non-aktif' });
 
   const fetchData = async (page = 1, search = searchQuery) => {
     setLoading(true);
@@ -54,8 +54,7 @@ export default function TahunAjaranPage() {
       setEditingId(item.id_tahun_ajaran || item.id);
       setFormData({
         tahun_ajaran: item.tahun_ajaran || '',
-        status: item.status || 'non-aktif',
-      });
+        status: item.status || 'non-aktif' });
     } else {
       setEditingId(null);
       setFormData({ tahun_ajaran: '', status: 'non-aktif' });
@@ -186,20 +185,11 @@ export default function TahunAjaranPage() {
                       )}
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <button
-                        onClick={() => handleSetActive(item.id_tahun_ajaran || item.id)}
-                        className="text-gray-400 hover:text-green-600 mr-3 transition-colors cursor-pointer"
-                        title="Aktifkan"
-                        disabled={item.status === 'aktif'}
-                      >
-                        <CheckCircle className="h-4 w-4" />
-                      </button>
-                      <button onClick={() => openModal(item)} className="text-gray-400 hover:text-gray-900 mr-3 transition-colors cursor-pointer" title="Ubah">
-                        <Pencil className="h-4 w-4" />
-                      </button>
-                      <button onClick={() => handleDelete(item.id_tahun_ajaran || item.id)} className="text-gray-400 hover:text-red-600 transition-colors cursor-pointer" title="Hapus">
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                                          <DropdownMenu actions={[
+                      { label: 'Aktifkan', icon: CheckCircle, onClick: () => handleSetActive(item.id_tahun_ajaran || item.id), variant: 'success' },
+                      { label: 'Ubah', icon: Pencil, onClick: () => openModal(item), variant: 'default' },
+                      { label: 'Hapus', icon: Trash2, onClick: () => handleDelete(item.id_tahun_ajaran || item.id), variant: 'danger' },
+                    ]} />
                     </td>
                   </tr>
                 ))

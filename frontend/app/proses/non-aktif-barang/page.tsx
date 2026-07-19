@@ -6,6 +6,7 @@ import { Plus, Pencil, Trash2, X, Loader2, Search, Ban } from 'lucide-react';
 import { extractData, formatDate } from '@/lib/utils';
 
 import { toast } from 'sonner';
+import DropdownMenu from '@/app/components/DropdownMenu';
 
 export default function NonAktifBarangPage() {
   const [data, setData] = useState<any[]>([]);
@@ -22,8 +23,7 @@ export default function NonAktifBarangPage() {
     id_status: '',
     jumlah_nonaktif: '1',
     tanggal: '',
-    keterangan: '',
-  };
+    keterangan: '' };
   const [formData, setFormData] = useState(emptyForm);
 
   const fetchData = async () => {
@@ -54,8 +54,7 @@ export default function NonAktifBarangPage() {
         id_status: item.id_status || '',
         jumlah_nonaktif: item.jumlah_nonaktif ? String(item.jumlah_nonaktif) : '1',
         tanggal: item.tanggal || '',
-        keterangan: item.keterangan || '',
-      });
+        keterangan: item.keterangan || '' });
     } else {
       setEditingId(null);
       setFormData({ ...emptyForm, tanggal: new Date().toISOString().split('T')[0] });
@@ -73,8 +72,7 @@ export default function NonAktifBarangPage() {
         kode_inventaris: formData.kode_inventaris,
         id_status: Number(formData.id_status),
         jumlah_nonaktif: Number(formData.jumlah_nonaktif) || 1,
-        tanggal: formData.tanggal,
-      };
+        tanggal: formData.tanggal };
       if (formData.keterangan) payload.keterangan = formData.keterangan;
 
       if (editingId) {
@@ -152,8 +150,10 @@ export default function NonAktifBarangPage() {
                   <td className="px-6 py-4 text-gray-500">{formatDate(item.tanggal)}</td>
                   <td className="px-6 py-4 text-gray-500 max-w-xs truncate">{item.keterangan || '-'}</td>
                   <td className="px-6 py-4 text-right">
-                    <button onClick={() => openModal(item)} className="text-gray-400 hover:text-gray-900 mr-3 cursor-pointer" title="Ubah"><Pencil className="h-4 w-4" /></button>
-                    <button onClick={() => handleDelete(item.id_barang_non_aktif)} className="text-gray-400 hover:text-red-600 cursor-pointer" title="Hapus"><Trash2 className="h-4 w-4" /></button>
+                                      <DropdownMenu actions={[
+                    { label: 'Ubah', icon: Pencil, onClick: () => openModal(item), variant: 'default' },
+                    { label: 'Hapus', icon: Trash2, onClick: () => handleDelete(item.id_barang_non_aktif), variant: 'danger' },
+                  ]} />
                   </td>
                 </tr>
               ))}

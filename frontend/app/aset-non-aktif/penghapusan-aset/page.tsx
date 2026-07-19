@@ -8,6 +8,7 @@ import api from '@/utils/api';
 import { Plus, Trash2, X, Loader2, Search } from 'lucide-react';
 
 import { toast } from 'sonner';
+import DropdownMenu from '@/app/components/DropdownMenu';
 
 export default function PenghapusanAsetPage() {
   const [data, setData] = useState<any[]>([]);
@@ -22,8 +23,7 @@ export default function PenghapusanAsetPage() {
   const [formData, setFormData] = useState({
     kode_barang: '',
     tanggal_hapus: '',
-    alasan_hapus: '',
-  });
+    alasan_hapus: '' });
 
   const fetchData = async (page = 1, search = searchQuery) => {
     setLoading(true);
@@ -167,9 +167,9 @@ export default function PenghapusanAsetPage() {
                     <td className="px-6 py-4 text-gray-500">{item.tanggal_hapus}</td>
                     <td className="px-6 py-4 text-gray-500 max-w-xs truncate">{item.alasan_hapus || '-'}</td>
                     <td className="px-6 py-4 text-right">
-                      <button onClick={() => handleDelete(item.id_penghapusan || item.id)} className="text-gray-400 hover:text-red-600 transition-colors cursor-pointer" title="Hapus">
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                                          <DropdownMenu actions={[
+                      { label: 'Hapus', icon: Trash2, onClick: () => handleDelete(item.id_penghapusan || item.id), variant: 'danger' },
+                    ]} />
                     </td>
                   </tr>
                 ))

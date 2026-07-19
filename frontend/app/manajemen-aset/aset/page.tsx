@@ -6,6 +6,7 @@ import { extractData, formatDate } from '@/lib/utils';
 import { Plus, Pencil, Trash2, X, Loader2, Search, Eye } from 'lucide-react';
 
 import { toast } from 'sonner';
+import DropdownMenu from '@/app/components/DropdownMenu';
 
 export default function AsetPage() {
   const [data, setData] = useState<any[]>([]);
@@ -51,8 +52,7 @@ export default function AsetPage() {
     jadwal_pemeliharaan_berikutnya: '',
     nomor_polis_asuransi: '',
     nilai_pertanggungan: '',
-    tanggal_akhir_asuransi: '',
-  };
+    tanggal_akhir_asuransi: '' };
 
   const [formData, setFormData] = useState(emptyForm);
 
@@ -122,8 +122,7 @@ export default function AsetPage() {
         jadwal_pemeliharaan_berikutnya: item.jadwal_pemeliharaan_berikutnya || '',
         nomor_polis_asuransi: item.nomor_polis_asuransi || '',
         nilai_pertanggungan: item.nilai_pertanggungan !== undefined ? String(item.nilai_pertanggungan) : '',
-        tanggal_akhir_asuransi: item.tanggal_akhir_asuransi || '',
-      });
+        tanggal_akhir_asuransi: item.tanggal_akhir_asuransi || '' });
     } else {
       setEditingId(null);
       setFormData({ ...emptyForm });
@@ -154,8 +153,7 @@ export default function AsetPage() {
         kode_barang: formData.kode_barang,
         id_master_barang: Number(formData.id_master_barang),
         status: formData.status,
-        harga_satuan: Number(formData.harga_satuan) || 0,
-      };
+        harga_satuan: Number(formData.harga_satuan) || 0 };
       if (formData.kode_inventaris) payload.kode_inventaris = formData.kode_inventaris;
       if (formData.id_pengadaan) payload.id_pengadaan = Number(formData.id_pengadaan);
       if (formData.id_kondisi) payload.id_kondisi = Number(formData.id_kondisi);
@@ -211,8 +209,7 @@ export default function AsetPage() {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
       currency: 'IDR',
-      minimumFractionDigits: 0,
-    }).format(value);
+      minimumFractionDigits: 0 }).format(value);
   };
 
   const inputClass = "w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900 bg-white disabled:bg-gray-100 disabled:text-gray-500";
@@ -294,15 +291,11 @@ export default function AsetPage() {
                       </span>
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <button onClick={() => openDetailModal(item)} className="text-gray-400 hover:text-blue-600 mr-3 transition-colors cursor-pointer" title="Lihat Detail">
-                        <Eye className="h-4 w-4" />
-                      </button>
-                      <button onClick={() => openModal(item)} className="text-gray-400 hover:text-gray-900 mr-3 transition-colors cursor-pointer" title="Ubah">
-                        <Pencil className="h-4 w-4" />
-                      </button>
-                      <button onClick={() => handleDelete(item.kode_barang)} className="text-gray-400 hover:text-red-600 transition-colors cursor-pointer" title="Hapus">
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                                          <DropdownMenu actions={[
+                      { label: 'Lihat Detail', icon: Eye, onClick: () => openDetailModal(item), variant: 'default' },
+                      { label: 'Ubah', icon: Pencil, onClick: () => openModal(item), variant: 'default' },
+                      { label: 'Hapus', icon: Trash2, onClick: () => handleDelete(item.kode_barang), variant: 'danger' },
+                    ]} />
                     </td>
                   </tr>
                 ))

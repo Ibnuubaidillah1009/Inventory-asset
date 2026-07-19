@@ -7,6 +7,7 @@ import api from '@/utils/api';
 import { Plus, Pencil, Trash2, X, Loader2, Search } from 'lucide-react';
 
 import { toast } from 'sonner';
+import DropdownMenu from '@/app/components/DropdownMenu';
 
 export default function SumberPerolehanPage() {
   const [data, setData] = useState<any[]>([]);
@@ -22,8 +23,7 @@ export default function SumberPerolehanPage() {
     kode_sumber: '',
     nama: '',
     keterangan: '',
-    is_active: true,
-  });
+    is_active: true });
 
   const fetchData = async (page = 1, search = searchQuery) => {
     setLoading(true);
@@ -61,16 +61,14 @@ export default function SumberPerolehanPage() {
         kode_sumber: item.kode_sumber || '',
         nama: item.nama || '',
         keterangan: item.keterangan || '',
-        is_active: item.is_active ?? true,
-      });
+        is_active: item.is_active ?? true });
     } else {
       setEditingId(null);
       setFormData({
         kode_sumber: '',
         nama: '',
         keterangan: '',
-        is_active: true,
-      });
+        is_active: true });
     }
     setIsModalOpen(true);
   };
@@ -186,20 +184,10 @@ export default function SumberPerolehanPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <button
-                        onClick={() => openModal(item)}
-                        className="text-gray-400 hover:text-gray-900 mr-3 transition-colors cursor-pointer"
-                        title="Ubah"
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(item.id_sumber_perolehan)}
-                        className="text-gray-400 hover:text-red-600 transition-colors cursor-pointer"
-                        title="Hapus"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                                          <DropdownMenu actions={[
+                      { label: 'Ubah', icon: Pencil, onClick: () => openModal(item), variant: 'default' },
+                      { label: 'Hapus', icon: Trash2, onClick: () => handleDelete(item.id_sumber_perolehan), variant: 'danger' },
+                    ]} />
                     </td>
                   </tr>
                 ))

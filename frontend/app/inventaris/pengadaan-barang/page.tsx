@@ -6,6 +6,7 @@ import { extractData, formatDate } from '@/lib/utils';
 import { Plus, Pencil, Trash2, X, Loader2, Search, Eye } from 'lucide-react';
 
 import { toast } from 'sonner';
+import DropdownMenu from '@/app/components/DropdownMenu';
 
 export default function PengadaanBarangPage() {
   const [data, setData] = useState<any[]>([]);
@@ -28,8 +29,7 @@ export default function PengadaanBarangPage() {
     kode_gudang: '',
     jumlah_pengadaan: '',
     sumber_perolehan: '',
-    status: 'diproses',
-  });
+    status: 'diproses' });
 
   const [detailItems, setDetailItems] = useState<Array<{
     id_master_barang: string;
@@ -92,14 +92,12 @@ export default function PengadaanBarangPage() {
         kode_gudang: item.kode_gudang || '',
         jumlah_pengadaan: item.jumlah_pengadaan || '',
         sumber_perolehan: item.sumber_perolehan || '',
-        status: item.status || 'diproses',
-      });
+        status: item.status || 'diproses' });
       setDetailItems(
         item.detail_pengadaan?.map((d: any) => ({
           id_master_barang: d.id_master_barang?.toString() || '',
           jumlah_masuk: d.jumlah_masuk?.toString() || '',
-          harga_satuan: d.harga_satuan?.toString() || '',
-        })) || [{ id_master_barang: '', jumlah_masuk: '', harga_satuan: '' }]
+          harga_satuan: d.harga_satuan?.toString() || '' })) || [{ id_master_barang: '', jumlah_masuk: '', harga_satuan: '' }]
       );
     } else {
       setEditingId(null);
@@ -111,8 +109,7 @@ export default function PengadaanBarangPage() {
         kode_gudang: '',
         jumlah_pengadaan: '',
         sumber_perolehan: '',
-        status: 'diproses',
-      });
+        status: 'diproses' });
       setDetailItems([{ id_master_barang: '', jumlah_masuk: '', harga_satuan: '' }]);
     }
     setIsModalOpen(true);
@@ -175,9 +172,7 @@ export default function PengadaanBarangPage() {
         detail: validDetails.map(d => ({
           id_master_barang: Number(d.id_master_barang),
           jumlah_masuk: Number(d.jumlah_masuk),
-          harga_satuan: d.harga_satuan ? Number(d.harga_satuan) : null,
-        })),
-      };
+          harga_satuan: d.harga_satuan ? Number(d.harga_satuan) : null })) };
 
       if (editingId) {
         await api.put(`/pengadaan/${editingId}`, payload);
@@ -212,8 +207,7 @@ export default function PengadaanBarangPage() {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
       currency: 'IDR',
-      minimumFractionDigits: 0,
-    }).format(value);
+      minimumFractionDigits: 0 }).format(value);
   };
 
   return (
@@ -292,15 +286,11 @@ export default function PengadaanBarangPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <button onClick={() => openDetailModal(item)} className="text-gray-400 hover:text-blue-600 mr-3 transition-colors cursor-pointer" title="Lihat Detail">
-                        <Eye className="h-4 w-4" />
-                      </button>
-                      <button onClick={() => openModal(item)} className="text-gray-400 hover:text-gray-900 mr-3 transition-colors cursor-pointer" title="Ubah">
-                        <Pencil className="h-4 w-4" />
-                      </button>
-                      <button onClick={() => handleDelete(item.id_pengadaan)} className="text-gray-400 hover:text-red-600 transition-colors cursor-pointer" title="Hapus">
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                                          <DropdownMenu actions={[
+                      { label: 'Lihat Detail', icon: Eye, onClick: () => openDetailModal(item), variant: 'default' },
+                      { label: 'Ubah', icon: Pencil, onClick: () => openModal(item), variant: 'default' },
+                      { label: 'Hapus', icon: Trash2, onClick: () => handleDelete(item.id_pengadaan), variant: 'danger' },
+                    ]} />
                     </td>
                   </tr>
                 ))

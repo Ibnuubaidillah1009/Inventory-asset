@@ -7,6 +7,7 @@ import api from '@/utils/api';
 import { Plus, Pencil, Trash2, X, Loader2, Search } from 'lucide-react';
 
 import { toast } from 'sonner';
+import DropdownMenu from '@/app/components/DropdownMenu';
 
 export default function KelasPage() {
   const [data, setData] = useState<any[]>([]);
@@ -22,8 +23,7 @@ export default function KelasPage() {
   const [formData, setFormData] = useState({
     id_rombel: '',
     nama_kelas: '',
-    tahun_ajaran: '',
-  });
+    tahun_ajaran: '' });
 
   const fetchData = async (page = 1, search = searchQuery) => {
     setLoading(true);
@@ -64,15 +64,13 @@ export default function KelasPage() {
       setFormData({
         id_rombel: item.id_rombel || '',
         nama_kelas: item.nama_kelas || '',
-        tahun_ajaran: item.tahun_ajaran || '',
-      });
+        tahun_ajaran: item.tahun_ajaran || '' });
     } else {
       setEditingId(null);
       setFormData({
         id_rombel: '',
         nama_kelas: '',
-        tahun_ajaran: '',
-      });
+        tahun_ajaran: '' });
     }
     setIsModalOpen(true);
   };
@@ -88,8 +86,7 @@ export default function KelasPage() {
     try {
       const payload = {
         ...formData,
-        id_rombel: formData.id_rombel ? Number(formData.id_rombel) : null,
-      };
+        id_rombel: formData.id_rombel ? Number(formData.id_rombel) : null };
 
       if (editingId) {
         await api.put(`/kelas/${editingId}`, payload);
@@ -183,20 +180,10 @@ export default function KelasPage() {
                     <td className="px-6 py-4 text-gray-500">{item.rombel?.nama || '-'}</td>
                     <td className="px-6 py-4 text-gray-500">{item.tahun_ajaran || '-'}</td>
                     <td className="px-6 py-4 text-right">
-                      <button
-                        onClick={() => openModal(item)}
-                        className="text-gray-400 hover:text-gray-900 mr-3 transition-colors cursor-pointer"
-                        title="Ubah"
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(item.id_kelas)}
-                        className="text-gray-400 hover:text-red-600 transition-colors cursor-pointer"
-                        title="Hapus"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                                          <DropdownMenu actions={[
+                      { label: 'Ubah', icon: Pencil, onClick: () => openModal(item), variant: 'default' },
+                      { label: 'Hapus', icon: Trash2, onClick: () => handleDelete(item.id_kelas), variant: 'danger' },
+                    ]} />
                     </td>
                   </tr>
                 ))

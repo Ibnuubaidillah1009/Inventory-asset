@@ -8,6 +8,7 @@ import api from '@/utils/api';
 import { Trash2, X, Loader2, Search, Eye } from 'lucide-react';
 
 import { toast } from 'sonner';
+import DropdownMenu from '@/app/components/DropdownMenu';
 
 export default function BarangKeluarPage() {
   const [data, setData] = useState<any[]>([]);
@@ -25,8 +26,7 @@ export default function BarangKeluarPage() {
     jumlah: '',
     tanggal_keluar: '',
     penerima: '',
-    keterangan: '',
-  });
+    keterangan: '' });
 
   const inputClass = "w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900 bg-white";
 
@@ -127,8 +127,10 @@ export default function BarangKeluarPage() {
                   <td className="px-6 py-4 text-gray-900">{item.penerima?.username || item.nama_penerima || '-'}</td>
                   <td className="px-6 py-4 text-gray-500 max-w-[150px] truncate">{item.keterangan || '-'}</td>
                   <td className="px-6 py-4 text-right">
-                    <button onClick={() => openDetailModal(item)} className="text-gray-400 hover:text-blue-600 mr-3 transition-colors cursor-pointer" title="Lihat Detail"><Eye className="h-4 w-4" /></button>
-                    <button onClick={() => handleDelete(item.id)} className="text-gray-400 hover:text-red-600 transition-colors cursor-pointer" title="Hapus"><Trash2 className="h-4 w-4" /></button>
+                                      <DropdownMenu actions={[
+                    { label: 'Lihat Detail', icon: Eye, onClick: () => openDetailModal(item), variant: 'default' },
+                    { label: 'Hapus', icon: Trash2, onClick: () => handleDelete(item.id), variant: 'danger' },
+                  ]} />
                   </td>
                 </tr>
               ))}
