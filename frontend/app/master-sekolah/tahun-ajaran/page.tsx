@@ -7,6 +7,8 @@ import { useState, useEffect } from 'react';
 import api from '@/utils/api';
 import { Plus, Pencil, Trash2, X, Loader2, Search, CheckCircle } from 'lucide-react';
 
+import { toast } from 'sonner';
+
 export default function TahunAjaranPage() {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -75,11 +77,12 @@ export default function TahunAjaranPage() {
       } else {
         await api.post('/tahun-ajaran', formData);
       }
+      toast.success('Data berhasil disimpan');
       closeModal();
       fetchData();
     } catch (error) {
       console.error('Gagal menyimpan data', error);
-      alert('Gagal menyimpan data. Periksa kembali input Anda.');
+      toast.error('Gagal menyimpan data. Periksa kembali input Anda.');
     } finally {
       setIsSubmitting(false);
     }
@@ -89,10 +92,11 @@ export default function TahunAjaranPage() {
     if (window.confirm('Apakah Anda yakin ingin menghapus tahun ajaran ini?')) {
       try {
         await api.delete(`/tahun-ajaran/${id}`);
+        toast.success('Data berhasil dihapus');
         fetchData();
       } catch (error) {
         console.error('Gagal menghapus data', error);
-        alert('Gagal menghapus data. Tahun ajaran mungkin sedang digunakan.');
+        toast.error('Gagal menghapus data. Tahun ajaran mungkin sedang digunakan.');
       }
     }
   };
@@ -100,10 +104,11 @@ export default function TahunAjaranPage() {
   const handleSetActive = async (id: number) => {
     try {
       await api.post(`/tahun-ajaran/${id}/set-active`);
+      toast.success('Data berhasil disimpan');
       fetchData();
     } catch (error) {
       console.error('Gagal mengaktifkan tahun ajaran', error);
-      alert('Gagal mengaktifkan tahun ajaran.');
+      toast.error('Gagal mengaktifkan tahun ajaran.');
     }
   };
 

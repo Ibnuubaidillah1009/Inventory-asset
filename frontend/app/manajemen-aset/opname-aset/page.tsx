@@ -6,6 +6,8 @@ import { useState, useEffect } from 'react';
 import api from '@/utils/api';
 import { Plus, Pencil, Trash2, X, Loader2, Search, Eye } from 'lucide-react';
 
+import { toast } from 'sonner';
+
 export default function OpnameAsetPage() {
   const [data, setData] = useState<any[]>([]);
   const [asetList, setAsetList] = useState<any[]>([]);
@@ -122,11 +124,12 @@ export default function OpnameAsetPage() {
       } else {
         await api.post('/opname-aset', payload);
       }
+      toast.success('Data berhasil disimpan');
       closeModal();
       fetchData();
     } catch (error) {
       console.error('Gagal menyimpan data', error);
-      alert('Gagal menyimpan data. Periksa kembali input Anda.');
+      toast.error('Gagal menyimpan data. Periksa kembali input Anda.');
     } finally {
       setIsSubmitting(false);
     }
@@ -136,10 +139,11 @@ export default function OpnameAsetPage() {
     if (window.confirm('Apakah Anda yakin ingin menghapus opname aset ini?')) {
       try {
         await api.delete(`/opname-aset/${id}`);
+        toast.success('Data berhasil dihapus');
         fetchData();
       } catch (error) {
         console.error('Gagal menghapus data', error);
-        alert('Gagal menghapus data. Opname aset mungkin sedang digunakan.');
+        toast.error('Gagal menghapus data. Opname aset mungkin sedang digunakan.');
       }
     }
   };

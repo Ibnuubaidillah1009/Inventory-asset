@@ -5,6 +5,8 @@ import api from '@/utils/api';
 import { Plus, Trash2, X, Loader2, Search, Eye, Check } from 'lucide-react';
 import { extractData, formatDate } from '@/lib/utils';
 
+import { toast } from 'sonner';
+
 export default function PermintaanBarangPage() {
   const [data, setData] = useState<any[]>([]);
   const [masterBarangList, setMasterBarangList] = useState<any[]>([]);
@@ -106,11 +108,12 @@ export default function PermintaanBarangPage() {
         alasan_kebutuhan: formData.alasan_kebutuhan,
         keterangan_keperluan: formData.keterangan_keperluan || null,
       });
+      toast.success('Data berhasil disimpan');
       closeModal();
       fetchData();
     } catch (error) {
       console.error('Gagal menyimpan data', error);
-      alert('Gagal menyimpan data. Periksa kembali input Anda.');
+      toast.error('Gagal menyimpan data. Periksa kembali input Anda.');
     } finally {
       setIsSubmitting(false);
     }
@@ -126,7 +129,7 @@ export default function PermintaanBarangPage() {
       fetchData();
     } catch (error) {
       console.error('Gagal memproses keputusan', error);
-      alert('Gagal memproses keputusan. Permintaan mungkin sudah diproses sebelumnya.');
+      toast.error('Gagal memproses keputusan. Permintaan mungkin sudah diproses sebelumnya.');
     } finally {
       setIsSubmitting(false);
     }
@@ -136,10 +139,11 @@ export default function PermintaanBarangPage() {
     if (window.confirm('Apakah Anda yakin ingin menghapus permintaan ini?')) {
       try {
         await api.delete(`/permintaan/${id}`);
+        toast.success('Data berhasil dihapus');
         fetchData();
       } catch (error) {
         console.error('Gagal menghapus data', error);
-        alert('Gagal menghapus data. Permintaan mungkin sudah diproses.');
+        toast.error('Gagal menghapus data. Permintaan mungkin sudah diproses.');
       }
     }
   };

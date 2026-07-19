@@ -5,6 +5,8 @@ import api from '@/utils/api';
 import { Plus, Pencil, Trash2, X, Loader2, Search, Eye } from 'lucide-react';
 import { extractData, formatDate } from '@/lib/utils';
 
+import { toast } from 'sonner';
+
 export default function InputTanahPage() {
   const [data, setData] = useState<any[]>([]);
   const [lokasiList, setLokasiList] = useState<any[]>([]);
@@ -140,11 +142,12 @@ export default function InputTanahPage() {
           keterangan: JSON.stringify(payload),
         });
       }
+      toast.success('Data berhasil disimpan');
       closeModal();
       fetchData();
     } catch (error) {
       console.error('Gagal menyimpan data', error);
-      alert('Gagal menyimpan data. Periksa kembali input Anda.');
+      toast.error('Gagal menyimpan data. Periksa kembali input Anda.');
     } finally {
       setIsSubmitting(false);
     }
@@ -154,10 +157,11 @@ export default function InputTanahPage() {
     if (window.confirm('Apakah Anda yakin ingin menghapus aset tanah ini?')) {
       try {
         await api.delete(`/aset/${id}`);
+        toast.success('Data berhasil dihapus');
         fetchData();
       } catch (error) {
         console.error('Gagal menghapus data', error);
-        alert('Gagal menghapus data. Aset mungkin sedang digunakan.');
+        toast.error('Gagal menghapus data. Aset mungkin sedang digunakan.');
       }
     }
   };

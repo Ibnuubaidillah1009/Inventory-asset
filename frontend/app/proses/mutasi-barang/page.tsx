@@ -5,6 +5,8 @@ import api from '@/utils/api';
 import { Plus, X, Loader2, Search, ArrowRightLeft, Pencil, Trash2 } from 'lucide-react';
 import { extractData, formatDate } from '@/lib/utils';
 
+import { toast } from 'sonner';
+
 interface MutasiItem {
   id_mutasi: number;
   kode_inventaris: string;
@@ -100,6 +102,7 @@ export default function MutasiBarangPage() {
       } else {
         await api.post('/mutasi', payload);
       }
+      toast.success('Data berhasil disimpan');
       closeModal();
       fetchData();
     } catch (error) {
@@ -114,10 +117,11 @@ export default function MutasiBarangPage() {
     if (!confirm(`Hapus mutasi ${item.kode_inventaris}?`)) return;
     try {
       await api.delete(`/mutasi/${item.id_mutasi}`);
+      toast.success('Data berhasil dihapus');
       fetchData();
     } catch (error) {
       console.error('Gagal menghapus mutasi', error);
-      alert('Gagal menghapus mutasi.');
+      toast.error('Gagal menghapus mutasi.');
     }
   };
 

@@ -6,6 +6,8 @@ import { useState, useEffect } from 'react';
 import api from '@/utils/api';
 import { Plus, Pencil, Trash2, X, Loader2, Search } from 'lucide-react';
 
+import { toast } from 'sonner';
+
 export default function SumberPerolehanPage() {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -87,11 +89,12 @@ export default function SumberPerolehanPage() {
       } else {
         await api.post('/sumber-perolehan', formData);
       }
+      toast.success('Data berhasil disimpan');
       closeModal();
       fetchData(currentPage);
     } catch (error) {
       console.error('Gagal menyimpan data', error);
-      alert('Gagal menyimpan data. Periksa kembali input Anda.');
+      toast.error('Gagal menyimpan data. Periksa kembali input Anda.');
     } finally {
       setIsSubmitting(false);
     }
@@ -104,7 +107,7 @@ export default function SumberPerolehanPage() {
         fetchData(currentPage);
       } catch (error) {
         console.error('Gagal menghapus data', error);
-        alert('Gagal menghapus data. Sumber perolehan mungkin sedang digunakan oleh pengadaan.');
+        toast.error('Gagal menghapus data. Sumber perolehan mungkin sedang digunakan oleh pengadaan.');
       }
     }
   };

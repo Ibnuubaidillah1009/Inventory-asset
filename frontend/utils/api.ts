@@ -9,7 +9,6 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  // Cek apakah kode berjalan di browser (untuk menghindari error di Server Side Rendering)
   if (typeof window !== 'undefined') {
     const token = localStorage.getItem('token');
     if (token) {
@@ -18,5 +17,23 @@ api.interceptors.request.use((config) => {
   }
   return config;
 });
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401 && typeof window !== 'undefined') {
+      const url = error.config?.url || '';
+      const isAuthRequest = url.includes('/login') || url.includes('/logout');
+
+      if (!isAuthRequest && window.location.pathname !== '/login') {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        localStorage.removeItem('menu_tree');
+        window.location.href = '/login';
+      }
+    }
+    return Promise.reject(error);
+  }
+);
 
 export default api;

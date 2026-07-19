@@ -4,6 +4,8 @@ import { useState } from 'react';
 import api from '@/utils/api';
 import { Settings, Loader2, CheckCircle2, AlertCircle, Wifi, WifiOff } from 'lucide-react';
 
+import { toast } from 'sonner';
+
 export default function KoneksiPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isTesting, setIsTesting] = useState(false);

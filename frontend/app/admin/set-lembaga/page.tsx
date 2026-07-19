@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import api from '@/utils/api';
 import { Loader2, Save, Info } from 'lucide-react';
 
+import { toast } from 'sonner';
+
 export default function SetLembagaPage() {
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -67,10 +69,10 @@ export default function SetLembagaPage() {
           setPengaturanId(res.data.data.id_pengaturan);
         }
       }
-      alert('Pengaturan lembaga berhasil disimpan.');
+      toast.success('Pengaturan lembaga berhasil disimpan.');
     } catch (error) {
       console.error('Gagal menyimpan pengaturan', error);
-      alert('Gagal menyimpan pengaturan. Periksa kembali input Anda.');
+      toast.error('Gagal menyimpan pengaturan. Periksa kembali input Anda.');
     } finally {
       setIsSubmitting(false);
     }

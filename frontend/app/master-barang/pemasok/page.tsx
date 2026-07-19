@@ -6,6 +6,8 @@ import { useState, useEffect } from 'react';
 import api from '@/utils/api';
 import { Plus, Pencil, Trash2, X, Loader2, Search } from 'lucide-react';
 
+import { toast } from 'sonner';
+
 export default function PemasokPage() {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -87,11 +89,12 @@ export default function PemasokPage() {
       } else {
         await api.post('/pemasok', formData);
       }
+      toast.success('Data berhasil disimpan');
       closeModal();
       fetchData(currentPage);
     } catch (error) {
       console.error('Gagal menyimpan data', error);
-      alert('Gagal menyimpan data. Periksa kembali input Anda.');
+      toast.error('Gagal menyimpan data. Periksa kembali input Anda.');
     } finally {
       setIsSubmitting(false);
     }
@@ -104,7 +107,7 @@ export default function PemasokPage() {
         fetchData(currentPage);
       } catch (error) {
         console.error('Gagal menghapus data', error);
-        alert('Gagal menghapus data. Pemasok mungkin masih terikat pada transaksi pengadaan.');
+        toast.error('Gagal menghapus data. Pemasok mungkin masih terikat pada transaksi pengadaan.');
       }
     }
   };

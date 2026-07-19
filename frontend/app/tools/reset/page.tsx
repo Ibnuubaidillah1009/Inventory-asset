@@ -4,6 +4,8 @@ import { useState } from 'react';
 import api from '@/utils/api';
 import { AlertTriangle, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 
+import { toast } from 'sonner';
+
 export default function ResetPage() {
   const [isResetting, setIsResetting] = useState(false);
   const [status, setStatus] = useState<'success' | 'error' | null>(null);

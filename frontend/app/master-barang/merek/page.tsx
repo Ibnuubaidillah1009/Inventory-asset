@@ -6,6 +6,8 @@ import { useState, useEffect } from 'react';
 import api from '@/utils/api';
 import { Plus, Pencil, Trash2, X, Loader2, Search } from 'lucide-react';
 
+import { toast } from 'sonner';
+
 export default function MerekPage() {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -81,11 +83,12 @@ export default function MerekPage() {
       } else {
         await api.post('/merek', formData);
       }
+      toast.success('Data berhasil disimpan');
       closeModal();
       fetchData(currentPage);
     } catch (error) {
       console.error('Gagal menyimpan data', error);
-      alert('Gagal menyimpan data. Periksa kembali input Anda.');
+      toast.error('Gagal menyimpan data. Periksa kembali input Anda.');
     } finally {
       setIsSubmitting(false);
     }
@@ -98,7 +101,7 @@ export default function MerekPage() {
         fetchData(currentPage);
       } catch (error) {
         console.error('Gagal menghapus data', error);
-        alert('Gagal menghapus data. Data mungkin sedang digunakan oleh barang lain.');
+        toast.error('Gagal menghapus data. Data mungkin sedang digunakan oleh barang lain.');
       }
     }
   };

@@ -1,9 +1,11 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import api from '@/utils/api';
+import useIdleTimeout from '@/hooks/useIdleTimeout';
+import { AlertTriangle } from 'lucide-react';
 import {
   LayoutDashboard,
   Users,
@@ -178,6 +180,7 @@ export default function ShellLayout({ children }: { children: React.ReactNode })
   const handleInvalidSession = useCallback(() => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    localStorage.removeItem('menu_tree');
     router.push('/login');
   }, [router]);
 
@@ -185,6 +188,9 @@ export default function ShellLayout({ children }: { children: React.ReactNode })
   const [loading, setLoading] = useState(true);
   const [allowedMenus, setAllowedMenus] = useState<MenuItem[]>([]);
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
+  const [showIdleWarning, setShowIdleWarning] = useState(false);
+  const [idleCountdown, setIdleCountdown] = useState(300);
+  const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const toggleMenu = (label: string) => {
     setOpenMenus(prev => {
@@ -279,6 +285,59 @@ export default function ShellLayout({ children }: { children: React.ReactNode })
       handleInvalidSession();
     }
   };
+
+  const handleIdleWarning = useCallback(() => {
+    setShowIdleWarning(true);
+    setIdleCountdown(300);
+  }, []);
+
+  const handleIdleWarningDismissed = useCallback(() => {
+    setShowIdleWarning(false);
+    if (countdownRef.current) clearInterval(countdownRef.current);
+  }, []);
+
+  const { extendSession } = useIdleTimeout({
+    onLogout: handleLogout,
+    onWarning: handleIdleWarning,
+    onWarningDismissed: handleIdleWarningDismissed,
+  });
+
+  // Countdown timer untuk peringatan idle
+  useEffect(() => {
+    if (!showIdleWarning) return;
+
+    countdownRef.current = setInterval(() => {
+      setIdleCountdown(prev => {
+        if (prev <= 1) {
+          if (countdownRef.current) clearInterval(countdownRef.current);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => {
+      if (countdownRef.current) clearInterval(countdownRef.current);
+    };
+  }, [showIdleWarning]);
+
+  // Server ping — cek koneksi tiap 5 menit
+  useEffect(() => {
+    if (!user) return;
+
+    const pingServer = async () => {
+      try {
+        await api.get('/me');
+      } catch (error: any) {
+        if (!error.response) {
+          handleInvalidSession();
+        }
+      }
+    };
+
+    const interval = setInterval(pingServer, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [user, handleInvalidSession]);
 
   if (loading) {
     return (
@@ -394,6 +453,37 @@ export default function ShellLayout({ children }: { children: React.ReactNode })
           {children}
         </main>
       </div>
+
+      {showIdleWarning && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full mx-4">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="flex-shrink-0 w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center">
+                <AlertTriangle className="h-5 w-5 text-amber-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">Sesi Akan Berakhir</h3>
+            </div>
+            <p className="text-sm text-gray-600 mb-4">
+              Anda tidak melakukan aktivitas selama lebih dari 1 jam 55 menit.
+              Sesi akan berakhir dalam <span className="font-semibold text-gray-900">{Math.floor(idleCountdown / 60)}:{(idleCountdown % 60).toString().padStart(2, '0')}</span> menit.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={handleLogout}
+                className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors cursor-pointer"
+              >
+                Keluar Sekarang
+              </button>
+              <button
+                onClick={() => { extendSession(); setShowIdleWarning(false); }}
+                className="flex-1 px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-md hover:bg-gray-800 transition-colors cursor-pointer"
+              >
+                Tetap di Sini
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

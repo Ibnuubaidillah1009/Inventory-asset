@@ -6,6 +6,8 @@ import { useState, useEffect } from 'react';
 import api from '@/utils/api';
 import { Plus, Pencil, Trash2, X, Loader2, Search } from 'lucide-react';
 
+import { toast } from 'sonner';
+
 export default function RombelPage() {
   const [data, setData] = useState<any[]>([]);
   const [jurusanList, setJurusanList] = useState<any[]>([]);
@@ -100,11 +102,12 @@ export default function RombelPage() {
       } else {
         await api.post('/rombel', payload);
       }
+      toast.success('Data berhasil disimpan');
       closeModal();
       fetchData(currentPage);
     } catch (error) {
       console.error('Gagal menyimpan data rombel', error);
-      alert('Gagal menyimpan data. Periksa kembali input Anda.');
+      toast.error('Gagal menyimpan data. Periksa kembali input Anda.');
     } finally {
       setIsSubmitting(false);
     }
@@ -117,7 +120,7 @@ export default function RombelPage() {
         fetchData(currentPage);
       } catch (error) {
         console.error('Gagal menghapus data', error);
-        alert('Gagal menghapus data. Rombel mungkin masih digunakan di data kelas.');
+        toast.error('Gagal menghapus data. Rombel mungkin masih digunakan di data kelas.');
       }
     }
   };

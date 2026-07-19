@@ -5,6 +5,8 @@ import api from '@/utils/api';
 import { Loader2, Search, RotateCcw, Eye, X } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 
+import { toast } from 'sonner';
+
 export default function PengembalianPage() {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -33,9 +35,10 @@ export default function PengembalianPage() {
     setIsProcessing(nomor);
     try {
       await api.put(`/peminjaman/${encodeURIComponent(nomor)}/kembalikan`);
+      toast.success('Data berhasil disimpan');
       fetchData();
     } catch (error: any) {
-      alert(error?.response?.data?.message || 'Gagal mengembalikan.');
+      toast.error(error?.response?.data?.message || 'Gagal mengembalikan.');
     } finally {
       setIsProcessing(null);
     }

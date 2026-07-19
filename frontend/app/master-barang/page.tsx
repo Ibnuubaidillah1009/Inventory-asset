@@ -6,6 +6,8 @@ import { useState, useEffect } from 'react';
 import api from '@/utils/api';
 import { Plus, Pencil, Trash2, X, Loader2, Search } from 'lucide-react';
 
+import { toast } from 'sonner';
+
 export default function MasterBarangPage() {
   const [data, setData] = useState<any[]>([]);
   const [kategoriList, setKategoriList] = useState<any[]>([]);
@@ -111,11 +113,12 @@ export default function MasterBarangPage() {
       } else {
         await api.post('/master-barang', payload);
       }
+      toast.success('Data berhasil disimpan');
       closeModal();
       fetchData(currentPage);
     } catch (error) {
       console.error('Gagal menyimpan data', error);
-      alert('Gagal menyimpan data. Periksa kembali input Anda.');
+      toast.error('Gagal menyimpan data. Periksa kembali input Anda.');
     } finally {
       setIsSubmitting(false);
     }
@@ -128,7 +131,7 @@ export default function MasterBarangPage() {
         fetchData(currentPage);
       } catch (error) {
         console.error('Gagal menghapus data', error);
-        alert('Gagal menghapus data. Barang mungkin sedang digunakan pada data aset fisik.');
+        toast.error('Gagal menghapus data. Barang mungkin sedang digunakan pada data aset fisik.');
       }
     }
   };

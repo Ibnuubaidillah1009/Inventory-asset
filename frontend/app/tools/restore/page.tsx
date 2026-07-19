@@ -4,6 +4,8 @@ import { useState, useRef } from 'react';
 import api from '@/utils/api';
 import { Upload, Loader2, CheckCircle2, AlertCircle, AlertTriangle } from 'lucide-react';
 
+import { toast } from 'sonner';
+
 export default function RestorePage() {
   const [isRestoring, setIsRestoring] = useState(false);
   const [status, setStatus] = useState<'success' | 'error' | null>(null);
@@ -22,7 +24,7 @@ export default function RestorePage() {
 
   const handleRestore = async () => {
     if (!selectedFile) {
-      alert('Pilih file backup terlebih dahulu.');
+      toast.error('Pilih file backup terlebih dahulu.');
       return;
     }
 

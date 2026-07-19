@@ -5,6 +5,8 @@ import api from '@/utils/api';
 import { Plus, Pencil, Trash2, X, Loader2, Search, ClipboardCheck } from 'lucide-react';
 import { extractData, formatDate } from '@/lib/utils';
 
+import { toast } from 'sonner';
+
 export default function ProsesOpnamePage() {
   const [data, setData] = useState<any[]>([]);
   const [asetList, setAsetList] = useState<any[]>([]);
@@ -80,11 +82,12 @@ export default function ProsesOpnamePage() {
       } else {
         await api.post('/opname-aset', payload);
       }
+      toast.success('Data berhasil disimpan');
       closeModal();
       fetchData();
     } catch (error) {
       console.error('Gagal menyimpan data', error);
-      alert('Gagal menyimpan data.');
+      toast.error('Gagal menyimpan data.');
     } finally {
       setIsSubmitting(false);
     }

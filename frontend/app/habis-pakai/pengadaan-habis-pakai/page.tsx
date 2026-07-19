@@ -7,6 +7,8 @@ import { useState, useEffect } from 'react';
 import api from '@/utils/api';
 import { Plus, Pencil, Trash2, X, Loader2, Search, Eye } from 'lucide-react';
 
+import { toast } from 'sonner';
+
 export default function PengadaanHabisPakaiPage() {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -90,11 +92,12 @@ export default function PengadaanHabisPakaiPage() {
       } else {
         await api.post('/pengadaan-habis-pakai', payload);
       }
+      toast.success('Data berhasil disimpan');
       closeModal();
       fetchData();
     } catch (error) {
       console.error('Gagal menyimpan data', error);
-      alert('Gagal menyimpan data. Periksa kembali input Anda.');
+      toast.error('Gagal menyimpan data. Periksa kembali input Anda.');
     } finally {
       setIsSubmitting(false);
     }
@@ -104,10 +107,11 @@ export default function PengadaanHabisPakaiPage() {
     if (window.confirm('Apakah Anda yakin ingin menghapus pengadaan ini?')) {
       try {
         await api.delete(`/pengadaan-habis-pakai/${id}`);
+        toast.success('Data berhasil dihapus');
         fetchData();
       } catch (error) {
         console.error('Gagal menghapus data', error);
-        alert('Gagal menghapus data.');
+        toast.error('Gagal menghapus data.');
       }
     }
   };

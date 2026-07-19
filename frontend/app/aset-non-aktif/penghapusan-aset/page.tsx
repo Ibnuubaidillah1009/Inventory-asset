@@ -7,6 +7,8 @@ import { useState, useEffect } from 'react';
 import api from '@/utils/api';
 import { Plus, Trash2, X, Loader2, Search } from 'lucide-react';
 
+import { toast } from 'sonner';
+
 export default function PenghapusanAsetPage() {
   const [data, setData] = useState<any[]>([]);
   const [asetList, setAsetList] = useState<any[]>([]);
@@ -75,11 +77,12 @@ export default function PenghapusanAsetPage() {
     setIsSubmitting(true);
     try {
       await api.post('/penghapusan-aset', formData);
+      toast.success('Data berhasil disimpan');
       closeModal();
       fetchData();
     } catch (error) {
       console.error('Gagal menyimpan data', error);
-      alert('Gagal menyimpan data. Periksa kembali input Anda.');
+      toast.error('Gagal menyimpan data. Periksa kembali input Anda.');
     } finally {
       setIsSubmitting(false);
     }
@@ -89,10 +92,11 @@ export default function PenghapusanAsetPage() {
     if (window.confirm('Apakah Anda yakin ingin menghapus data penghapusan ini?')) {
       try {
         await api.delete(`/penghapusan-aset/${id}`);
+        toast.success('Data berhasil dihapus');
         fetchData();
       } catch (error) {
         console.error('Gagal menghapus data', error);
-        alert('Gagal menghapus data.');
+        toast.error('Gagal menghapus data.');
       }
     }
   };

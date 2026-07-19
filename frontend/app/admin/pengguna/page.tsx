@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, X, Loader2, Search } from 'lucide-react';
 import api from '@/utils/api';
 
+import { toast } from 'sonner';
+
 interface Peran {
   id_peran: number;
   nama_peran: string;
@@ -69,7 +71,7 @@ export default function ManajemenPengguna() {
       setPeranList(peranRes.data?.data || peranRes.data || []);
     } catch (error) {
       console.error('Error fetching data:', error);
-      alert('Gagal memuat data.');
+      toast.error('Gagal memuat data.');
     } finally {
       setLoading(false);
     }
@@ -130,7 +132,7 @@ export default function ManajemenPengguna() {
       fetchData();
     } catch (error) {
       console.error('Error submitting data:', error);
-      alert('Gagal menyimpan data.');
+      toast.error('Gagal menyimpan data.');
     } finally {
       setFormLoading(false);
     }
@@ -140,10 +142,11 @@ export default function ManajemenPengguna() {
     if (confirm('Apakah Anda yakin ingin menghapus pengguna ini?')) {
       try {
         await api.delete(`/pengguna/${id}`);
+        toast.success('Data berhasil dihapus');
         fetchData();
       } catch (error) {
         console.error('Error deleting data:', error);
-        alert('Gagal menghapus data.');
+        toast.error('Gagal menghapus data.');
       }
     }
   };

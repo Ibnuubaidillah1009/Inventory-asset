@@ -7,6 +7,8 @@ import { useState, useEffect } from 'react';
 import api from '@/utils/api';
 import { Plus, Trash2, X, Loader2, Search, Eye } from 'lucide-react';
 
+import { toast } from 'sonner';
+
 export default function BarangKeluarPage() {
   const [data, setData] = useState<any[]>([]);
   const [masterBarangList, setMasterBarangList] = useState<any[]>([]);
@@ -87,11 +89,12 @@ export default function BarangKeluarPage() {
     try {
       const payload = { ...formData, jumlah_keluar: Number(formData.jumlah_keluar) };
       await api.post('/barang-keluar', payload);
+      toast.success('Data berhasil disimpan');
       closeModal();
       fetchData();
     } catch (error) {
       console.error('Gagal menyimpan data', error);
-      alert('Gagal menyimpan data. Periksa kembali input Anda.');
+      toast.error('Gagal menyimpan data. Periksa kembali input Anda.');
     } finally {
       setIsSubmitting(false);
     }
@@ -101,10 +104,11 @@ export default function BarangKeluarPage() {
     if (window.confirm('Apakah Anda yakin ingin menghapus barang keluar ini?')) {
       try {
         await api.delete(`/barang-keluar/${id}`);
+        toast.success('Data berhasil dihapus');
         fetchData();
       } catch (error) {
         console.error('Gagal menghapus data', error);
-        alert('Gagal menghapus data.');
+        toast.error('Gagal menghapus data.');
       }
     }
   };

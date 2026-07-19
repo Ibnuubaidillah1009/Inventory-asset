@@ -6,6 +6,8 @@ import { useState, useEffect } from 'react';
 import api from '@/utils/api';
 import { Plus, Pencil, Trash2, X, Loader2, Search, Eye } from 'lucide-react';
 
+import { toast } from 'sonner';
+
 interface Kategori { id_kategori?: number; id?: number; kode_kategori?: string; nama_kategori: string; }
 interface Merek { id_merek?: number; id?: number; nama_merek: string; }
 interface Satuan { id_satuan?: number; id?: number; nama_satuan: string; }
@@ -143,11 +145,12 @@ export default function MasterBarangPage() {
       } else {
         await api.post('/master-barang', formData);
       }
+      toast.success('Data berhasil disimpan');
       closeModal();
       fetchData();
     } catch (error) {
       console.error('Gagal menyimpan data', error);
-      alert('Gagal menyimpan data. Pastikan semua field yang wajib sudah terisi dengan benar.');
+      toast.error('Gagal menyimpan data. Pastikan semua field yang wajib sudah terisi dengan benar.');
     } finally {
       setIsSubmitting(false);
     }
@@ -157,10 +160,11 @@ export default function MasterBarangPage() {
     if (window.confirm('Apakah Anda yakin ingin menghapus barang ini?')) {
       try {
         await api.delete(`/master-barang/${id}`);
+        toast.success('Data berhasil dihapus');
         fetchData();
       } catch (error) {
         console.error('Gagal menghapus data', error);
-        alert('Gagal menghapus data. Barang mungkin sedang digunakan pada tabel aset.');
+        toast.error('Gagal menghapus data. Barang mungkin sedang digunakan pada tabel aset.');
       }
     }
   };

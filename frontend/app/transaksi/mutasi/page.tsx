@@ -7,6 +7,8 @@ import { useState, useEffect } from 'react';
 import api from '@/utils/api';
 import { Plus, Pencil, Trash2, X, Loader2, Search, Eye } from 'lucide-react';
 
+import { toast } from 'sonner';
+
 const statusBadge: Record<string, string> = {
   diproses: 'bg-yellow-100 text-yellow-800',
   selesai: 'bg-green-100 text-green-800',
@@ -84,10 +86,11 @@ export default function MutasiPage() {
       } else {
         await api.post('/mutasi', formData);
       }
+      toast.success('Data berhasil disimpan');
       closeModal();
       fetchData();
     } catch (error: any) {
-      alert(error?.response?.data?.message || 'Gagal menyimpan data mutasi.');
+      toast.error(error?.response?.data?.message || 'Gagal menyimpan data mutasi.');
     } finally { setIsSubmitting(false); }
   };
 
@@ -95,9 +98,10 @@ export default function MutasiPage() {
     if (!window.confirm('Apakah Anda yakin ingin menghapus mutasi ini?')) return;
     try {
       await api.delete(`/mutasi/${id}`);
+      toast.success('Data berhasil dihapus');
       fetchData();
     } catch (error: any) {
-      alert(error?.response?.data?.message || 'Gagal menghapus data.');
+      toast.error(error?.response?.data?.message || 'Gagal menghapus data.');
     }
   };
 

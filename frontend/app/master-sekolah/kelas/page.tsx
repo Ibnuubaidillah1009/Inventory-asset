@@ -6,6 +6,8 @@ import { useState, useEffect } from 'react';
 import api from '@/utils/api';
 import { Plus, Pencil, Trash2, X, Loader2, Search } from 'lucide-react';
 
+import { toast } from 'sonner';
+
 export default function KelasPage() {
   const [data, setData] = useState<any[]>([]);
   const [rombelList, setRombelList] = useState<any[]>([]);
@@ -94,11 +96,12 @@ export default function KelasPage() {
       } else {
         await api.post('/kelas', payload);
       }
+      toast.success('Data berhasil disimpan');
       closeModal();
       fetchData(currentPage);
     } catch (error) {
       console.error('Gagal menyimpan data kelas', error);
-      alert('Gagal menyimpan data. Periksa kembali input Anda.');
+      toast.error('Gagal menyimpan data. Periksa kembali input Anda.');
     } finally {
       setIsSubmitting(false);
     }
@@ -111,7 +114,7 @@ export default function KelasPage() {
         fetchData(currentPage);
       } catch (error) {
         console.error('Gagal menghapus data', error);
-        alert('Gagal menghapus data. Kelas mungkin masih digunakan oleh data pengguna (murid).');
+        toast.error('Gagal menghapus data. Kelas mungkin masih digunakan oleh data pengguna (murid).');
       }
     }
   };

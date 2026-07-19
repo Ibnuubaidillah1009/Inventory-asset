@@ -5,6 +5,8 @@ import api from '@/utils/api';
 import { extractData, formatDate } from '@/lib/utils';
 import { Plus, Pencil, Trash2, X, Loader2, Search, Eye } from 'lucide-react';
 
+import { toast } from 'sonner';
+
 export default function PengadaanBarangPage() {
   const [data, setData] = useState<any[]>([]);
   const [masterBarangList, setMasterBarangList] = useState<any[]>([]);
@@ -153,7 +155,7 @@ export default function PengadaanBarangPage() {
     try {
       const validDetails = detailItems.filter(d => d.id_master_barang && d.jumlah_masuk);
       if (validDetails.length === 0) {
-        alert('Minimal harus ada 1 detail barang.');
+        toast.error('Minimal harus ada 1 detail barang.');
         setIsSubmitting(false);
         return;
       }
@@ -182,11 +184,12 @@ export default function PengadaanBarangPage() {
       } else {
         await api.post('/pengadaan', payload);
       }
+      toast.success('Data berhasil disimpan');
       closeModal();
       fetchData();
     } catch (error) {
       console.error('Gagal menyimpan data', error);
-      alert('Gagal menyimpan data. Periksa kembali input Anda.');
+      toast.error('Gagal menyimpan data. Periksa kembali input Anda.');
     } finally {
       setIsSubmitting(false);
     }
@@ -196,10 +199,11 @@ export default function PengadaanBarangPage() {
     if (window.confirm('Apakah Anda yakin ingin menghapus pengadaan ini?')) {
       try {
         await api.delete(`/pengadaan/${id}`);
+        toast.success('Data berhasil dihapus');
         fetchData();
       } catch (error) {
         console.error('Gagal menghapus data', error);
-        alert('Gagal menghapus data. Pengadaan mungkin sudah terkait dengan aset.');
+        toast.error('Gagal menghapus data. Pengadaan mungkin sudah terkait dengan aset.');
       }
     }
   };

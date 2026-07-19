@@ -7,6 +7,8 @@ import { useState, useEffect } from 'react';
 import api from '@/utils/api';
 import { Plus, Pencil, Trash2, X, Loader2, Search, Eye } from 'lucide-react';
 
+import { toast } from 'sonner';
+
 export default function LokasiPage() {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -86,11 +88,12 @@ export default function LokasiPage() {
       } else {
         await api.post('/lokasi', formData);
       }
+      toast.success('Data berhasil disimpan');
       closeModal();
       fetchData();
     } catch (error) {
       console.error('Gagal menyimpan data', error);
-      alert('Gagal menyimpan data. Periksa kembali input Anda.');
+      toast.error('Gagal menyimpan data. Periksa kembali input Anda.');
     } finally {
       setIsSubmitting(false);
     }
@@ -100,10 +103,11 @@ export default function LokasiPage() {
     if (window.confirm('Apakah Anda yakin ingin menghapus lokasi ini?')) {
       try {
         await api.delete(`/lokasi/${id}`);
+        toast.success('Data berhasil dihapus');
         fetchData();
       } catch (error) {
         console.error('Gagal menghapus data', error);
-        alert('Gagal menghapus data. Lokasi mungkin sedang digunakan.');
+        toast.error('Gagal menghapus data. Lokasi mungkin sedang digunakan.');
       }
     }
   };

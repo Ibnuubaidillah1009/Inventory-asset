@@ -5,6 +5,8 @@ import api from '@/utils/api';
 import { formatDate } from '@/lib/utils';
 import { Plus, Trash2, X, Loader2, Search, Eye, CheckCircle, XCircle } from 'lucide-react';
 
+import { toast } from 'sonner';
+
 const statusBadge: Record<string, string> = {
   Menunggu: 'bg-yellow-100 text-yellow-800',
   Disetujui: 'bg-green-100 text-green-800',
@@ -52,9 +54,10 @@ export default function PermintaanPage() {
     setIsSubmitting(true);
     try {
       await api.put(`/permintaan/${encodeURIComponent(kode)}/keputusan`, { status_persetujuan: status === 'disetujui' ? 'Disetujui' : 'Ditolak' });
+      toast.success('Data berhasil disimpan');
       fetchData();
     } catch (error: any) {
-      alert(error?.response?.data?.message || 'Gagal memproses permintaan.');
+      toast.error(error?.response?.data?.message || 'Gagal memproses permintaan.');
     } finally { setIsSubmitting(false); }
   };
 
@@ -62,9 +65,10 @@ export default function PermintaanPage() {
     if (!window.confirm('Apakah Anda yakin ingin menghapus permintaan ini?')) return;
     try {
       await api.delete(`/permintaan/${encodeURIComponent(kode)}`);
+      toast.success('Data berhasil dihapus');
       fetchData();
     } catch (error: any) {
-      alert(error?.response?.data?.message || 'Gagal menghapus data.');
+      toast.error(error?.response?.data?.message || 'Gagal menghapus data.');
     }
   };
 

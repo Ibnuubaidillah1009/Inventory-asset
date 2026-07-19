@@ -7,6 +7,8 @@ import { useState, useEffect } from 'react';
 import api from '@/utils/api';
 import { Plus, Pencil, Trash2, X, Loader2, Search, Eye } from 'lucide-react';
 
+import { toast } from 'sonner';
+
 export default function AsetHabisPakaiPage() {
   const [data, setData] = useState<any[]>([]);
   const [kondisiList, setKondisiList] = useState<any[]>([]);
@@ -111,11 +113,12 @@ export default function AsetHabisPakaiPage() {
       } else {
         await api.post('/aset-habis-pakai', payload);
       }
+      toast.success('Data berhasil disimpan');
       closeModal();
       fetchData();
     } catch (error) {
       console.error('Gagal menyimpan data', error);
-      alert('Gagal menyimpan data. Periksa kembali input Anda.');
+      toast.error('Gagal menyimpan data. Periksa kembali input Anda.');
     } finally {
       setIsSubmitting(false);
     }
@@ -125,10 +128,11 @@ export default function AsetHabisPakaiPage() {
     if (window.confirm('Apakah Anda yakin ingin menghapus aset habis pakai ini?')) {
       try {
         await api.delete(`/aset-habis-pakai/${id}`);
+        toast.success('Data berhasil dihapus');
         fetchData();
       } catch (error) {
         console.error('Gagal menghapus data', error);
-        alert('Gagal menghapus data.');
+        toast.error('Gagal menghapus data.');
       }
     }
   };

@@ -7,6 +7,8 @@ import { useState, useEffect } from 'react';
 import api from '@/utils/api';
 import { Plus, Pencil, Trash2, X, Loader2, Search, Eye } from 'lucide-react';
 
+import { toast } from 'sonner';
+
 export default function UserPage() {
   const [data, setData] = useState<any[]>([]);
   const [peranList, setPeranList] = useState<any[]>([]);
@@ -105,11 +107,12 @@ export default function UserPage() {
       } else {
         await api.post('/pengguna', payload);
       }
+      toast.success('Data berhasil disimpan');
       closeModal();
       fetchData();
     } catch (error) {
       console.error('Gagal menyimpan data', error);
-      alert('Gagal menyimpan data. Periksa kembali input Anda.');
+      toast.error('Gagal menyimpan data. Periksa kembali input Anda.');
     } finally {
       setIsSubmitting(false);
     }
@@ -119,10 +122,11 @@ export default function UserPage() {
     if (window.confirm('Apakah Anda yakin ingin menghapus pengguna ini?')) {
       try {
         await api.delete(`/pengguna/${id}`);
+        toast.success('Data berhasil dihapus');
         fetchData();
       } catch (error) {
         console.error('Gagal menghapus data', error);
-        alert('Gagal menghapus data. Pengguna mungkin sedang digunakan.');
+        toast.error('Gagal menghapus data. Pengguna mungkin sedang digunakan.');
       }
     }
   };

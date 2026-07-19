@@ -5,6 +5,8 @@ import api from '@/utils/api';
 import { extractData, formatDate } from '@/lib/utils';
 import { Plus, X, Loader2, Search, Eye, Printer } from 'lucide-react';
 
+import { toast } from 'sonner';
+
 export default function PeminjamanPage() {
   const [data, setData] = useState<any[]>([]);
   const [asetList, setAsetList] = useState<any[]>([]);
@@ -134,7 +136,7 @@ export default function PeminjamanPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedBarang.length === 0) {
-      alert('Minimal pilih 1 barang untuk dipinjam.');
+      toast.error('Minimal pilih 1 barang untuk dipinjam.');
       return;
     }
     setIsSubmitting(true);
@@ -145,13 +147,14 @@ export default function PeminjamanPage() {
         detail: selectedBarang.map((b) => ({ kode_barang: b.kode_barang })),
       };
       const res = await api.post('/peminjaman', payload);
+      toast.success('Data berhasil disimpan');
       closeModal();
       fetchData();
       if (res.data.data) {
         setPrintData(extractData(res.data.data));
       }
     } catch (error: any) {
-      alert(error?.response?.data?.message || 'Gagal menyimpan peminjaman.');
+      toast.error(error?.response?.data?.message || 'Gagal menyimpan peminjaman.');
     } finally {
       setIsSubmitting(false);
     }

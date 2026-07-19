@@ -5,6 +5,8 @@ import api from '@/utils/api';
 import { Plus, Pencil, Trash2, X, Loader2, Search, Ban } from 'lucide-react';
 import { extractData, formatDate } from '@/lib/utils';
 
+import { toast } from 'sonner';
+
 export default function NonAktifBarangPage() {
   const [data, setData] = useState<any[]>([]);
   const [asetList, setAsetList] = useState<any[]>([]);
@@ -80,11 +82,12 @@ export default function NonAktifBarangPage() {
       } else {
         await api.post('/barang-non-aktif', payload);
       }
+      toast.success('Data berhasil disimpan');
       closeModal();
       fetchData();
     } catch (error) {
       console.error('Gagal menyimpan data', error);
-      alert('Gagal menyimpan data.');
+      toast.error('Gagal menyimpan data.');
     } finally {
       setIsSubmitting(false);
     }

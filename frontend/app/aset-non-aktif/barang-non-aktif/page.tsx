@@ -7,6 +7,8 @@ import { useState, useEffect } from 'react';
 import api from '@/utils/api';
 import { Loader2, Search, RotateCcw } from 'lucide-react';
 
+import { toast } from 'sonner';
+
 export default function BarangNonAktifPage() {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,9 +32,10 @@ export default function BarangNonAktifPage() {
     if (!confirm('Yakin ingin mengaktifkan kembali barang ini?')) return;
     try {
       await api.put(`/aset/${id}/status`, { status: 'aktif' });
+      toast.success('Data berhasil disimpan');
       fetchData();
     } catch (error: any) {
-      alert(error?.response?.data?.message || 'Gagal mengaktifkan barang.');
+      toast.error(error?.response?.data?.message || 'Gagal mengaktifkan barang.');
     }
   };
 
