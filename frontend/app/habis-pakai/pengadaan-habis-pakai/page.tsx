@@ -1,6 +1,6 @@
 'use client';
 
-import { extractData } from '@/lib/utils';
+import { extractData, formatRupiah } from '@/lib/utils';
 
 
 import { useState, useEffect } from 'react';
@@ -9,6 +9,7 @@ import { Plus, Pencil, Trash2, X, Loader2, Search, Eye } from 'lucide-react';
 
 import { toast } from 'sonner';
 import DropdownMenu from '@/app/components/DropdownMenu';
+import CurrencyInput from '@/app/components/CurrencyInput';
 
 export default function PengadaanHabisPakaiPage() {
   const [data, setData] = useState<any[]>([]);
@@ -113,10 +114,6 @@ export default function PengadaanHabisPakaiPage() {
         toast.error('Gagal menghapus data.');
       }
     }
-  };
-
-  const formatRupiah = (value: number) => {
-    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(value);
   };
 
   return (
@@ -284,14 +281,12 @@ export default function PengadaanHabisPakaiPage() {
               </div>
               <div>
                 <label className="block font-medium text-gray-700 mb-1">Total Harga</label>
-                <input
-                  type="number"
-                  required
-                  min="0"
+                <CurrencyInput
                   value={formData.total_harga}
-                  onChange={(e) => setFormData({ ...formData, total_harga: e.target.value })}
+                  onChange={(val) => setFormData({ ...formData, total_harga: val })}
                   className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900"
                   placeholder="0"
+                  required
                 />
               </div>
               <div>
@@ -313,8 +308,9 @@ export default function PengadaanHabisPakaiPage() {
                   className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900"
                 >
                   <option value="">Pilih Status</option>
-                  <option value="diproses">Diproses</option>
-                  <option value="selesai">Selesai</option>
+                  <option value="Menunggu Proses">Menunggu Proses</option>
+                  <option value="Dibelanjakan">Dibelanjakan</option>
+                  <option value="Selesai">Selesai</option>
                 </select>
               </div>
               <div className="pt-4 flex justify-end gap-3">

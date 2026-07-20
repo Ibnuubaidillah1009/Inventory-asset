@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import api from '@/utils/api';
-import { extractData, formatDate } from '@/lib/utils';
+import { extractData, formatDate, formatRupiah } from '@/lib/utils';
 import { Plus, Pencil, Trash2, X, Loader2, Search, Eye } from 'lucide-react';
 
 import { toast } from 'sonner';
 import DropdownMenu from '@/app/components/DropdownMenu';
+import CurrencyInput from '@/app/components/CurrencyInput';
 
 export default function AsetPage() {
   const [data, setData] = useState<any[]>([]);
@@ -203,13 +204,6 @@ export default function AsetPage() {
         toast.error('Gagal menghapus data. Aset mungkin sedang digunakan.');
       }
     }
-  };
-
-  const formatRupiah = (value: number) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0 }).format(value);
   };
 
   const inputClass = "w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900 bg-white disabled:bg-gray-100 disabled:text-gray-500";
@@ -549,11 +543,11 @@ export default function AsetPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div>
                       <label className="block font-medium text-gray-700 mb-1">Harga Satuan (Rp) *</label>
-                      <input type="number" required min="0" value={formData.harga_satuan} onChange={(e) => setFormData({ ...formData, harga_satuan: e.target.value })} className={inputClass} placeholder="10000000" />
+                      <CurrencyInput value={formData.harga_satuan} onChange={(val) => setFormData({ ...formData, harga_satuan: val })} className={inputClass} placeholder="0" required />
                     </div>
                     <div>
                       <label className="block font-medium text-gray-700 mb-1">Nilai Residu (Rp)</label>
-                      <input type="number" min="0" value={formData.nilai_residu} onChange={(e) => setFormData({ ...formData, nilai_residu: e.target.value })} className={inputClass} placeholder="1000000" />
+                      <CurrencyInput value={formData.nilai_residu} onChange={(val) => setFormData({ ...formData, nilai_residu: val })} className={inputClass} placeholder="0" />
                     </div>
                     <div>
                       <label className="block font-medium text-gray-700 mb-1">Umur Ekonomi (Tahun)</label>
@@ -605,7 +599,7 @@ export default function AsetPage() {
                     </div>
                     <div>
                       <label className="block font-medium text-gray-700 mb-1">Nilai Pertanggungan (Rp)</label>
-                      <input type="number" min="0" value={formData.nilai_pertanggungan} onChange={(e) => setFormData({ ...formData, nilai_pertanggungan: e.target.value })} className={inputClass} placeholder="50000000" />
+                      <CurrencyInput value={formData.nilai_pertanggungan} onChange={(val) => setFormData({ ...formData, nilai_pertanggungan: val })} className={inputClass} placeholder="0" />
                     </div>
                     <div>
                       <label className="block font-medium text-gray-700 mb-1">Tanggal Akhir Asuransi</label>

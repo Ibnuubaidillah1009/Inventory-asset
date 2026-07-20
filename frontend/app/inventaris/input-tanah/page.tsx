@@ -3,10 +3,11 @@
 import { useState, useEffect } from 'react';
 import api from '@/utils/api';
 import { Plus, Pencil, Trash2, X, Loader2, Search, Eye } from 'lucide-react';
-import { extractData, formatDate } from '@/lib/utils';
+import { extractData, formatDate, formatRupiah } from '@/lib/utils';
 
 import { toast } from 'sonner';
 import DropdownMenu from '@/app/components/DropdownMenu';
+import CurrencyInput from '@/app/components/CurrencyInput';
 
 export default function InputTanahPage() {
   const [data, setData] = useState<any[]>([]);
@@ -160,13 +161,6 @@ export default function InputTanahPage() {
         toast.error('Gagal menghapus data. Aset mungkin sedang digunakan.');
       }
     }
-  };
-
-  const formatRupiah = (value: number) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0 }).format(value);
   };
 
   return (
@@ -427,14 +421,12 @@ export default function InputTanahPage() {
                     </select>
                   </div>
                   <div>
-                    <label className="block font-medium text-gray-700 mb-1">Nilai Aset (Rp)</label>
-                    <input
-                      type="number"
-                      min="0"
+                      <label className="block font-medium text-gray-700 mb-1">Nilai Aset (Rp)</label>
+                    <CurrencyInput
                       value={formData.nilai_aset}
-                      onChange={(e) => setFormData({ ...formData, nilai_aset: e.target.value })}
+                      onChange={(val) => setFormData({ ...formData, nilai_aset: val })}
                       className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900"
-                      placeholder="Misal: 2000000000"
+                      placeholder="0"
                     />
                   </div>
                   <div>

@@ -26,3 +26,22 @@ export function extractData(apiData: any): any[] {
   if (Array.isArray(apiData.data)) return apiData.data;
   return [];
 }
+
+export function formatRupiah(value: number | null | undefined): string {
+  if (value === null || value === undefined || isNaN(value)) return 'Rp 0';
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
+export function formatAngka(value: number | null | undefined): string {
+  if (value === null || value === undefined || isNaN(value)) return '0';
+  return new Intl.NumberFormat('id-ID').format(value);
+}
+
+export function parseCurrencyInput(value: string): string {
+  return value.replace(/[^0-9]/g, '');
+}

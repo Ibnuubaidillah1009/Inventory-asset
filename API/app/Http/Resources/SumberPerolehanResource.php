@@ -12,7 +12,7 @@ class SumberPerolehanResource extends JsonResource
         return [
             'id_sumber_perolehan' => $this->id_sumber_perolehan,
             'kode_sumber'         => $this->kode_sumber,
-            'nama'                => $this->nama,
+            'nama_sumber'          => $this->nama_sumber,
             'keterangan'          => $this->keterangan,
             'is_active'           => $this->is_active,
         ];

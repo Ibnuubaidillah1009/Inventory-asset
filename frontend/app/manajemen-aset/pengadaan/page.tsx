@@ -2,15 +2,17 @@
 
 import { useState, useEffect } from 'react';
 import api from '@/utils/api';
-import { extractData, formatDate } from '@/lib/utils';
+import { extractData, formatDate, formatRupiah, parseCurrencyInput } from '@/lib/utils';
 import { Plus, Pencil, Trash2, X, Loader2, Search, Eye } from 'lucide-react';
 
 import { toast } from 'sonner';
 import DropdownMenu from '@/app/components/DropdownMenu';
+import CurrencyInput from '@/app/components/CurrencyInput';
 
 export default function PengadaanPage() {
   const [data, setData] = useState<any[]>([]);
   const [pemasokList, setPemasokList] = useState<any[]>([]);
+  const [sumberPerolehanList, setSumberPerolehanList] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
@@ -31,18 +33,19 @@ export default function PengadaanPage() {
     nominal_ppn: '',
     grand_total: '',
     keterangan: '',
-    sumber_perolehan: '',
+    id_sumber_perolehan: '',
     tanggal_pengiriman: '',
-    status: 'diproses' };
+    status: 'Menunggu Proses' };
 
   const [formData, setFormData] = useState(emptyForm);
 
   const fetchData = async (page = 1, search = searchQuery) => {
     setLoading(true);
     try {
-      const [resPengadaan, resPemasok] = await Promise.all([
+      const [resPengadaan, resPemasok, resSumber] = await Promise.all([
         api.get(`/pengadaan?page=${page}&search=${encodeURIComponent(search)}`),
         api.get('/pemasok').catch(() => ({ data: { data: [] } })),
+        api.get('/sumber-perolehan').catch(() => ({ data: { data: [] } })),
       ]);
 
       setData(extractData(resPengadaan.data.data));
@@ -51,6 +54,7 @@ export default function PengadaanPage() {
         setLastPage(resPengadaan.data.meta.last_page);
       }
       setPemasokList(extractData(resPemasok.data.data));
+      setSumberPerolehanList(extractData(resSumber.data.data));
     } catch (error) {
       console.error('Gagal mengambil data pengadaan', error);
     } finally {
@@ -79,9 +83,9 @@ export default function PengadaanPage() {
         nominal_ppn: item.nominal_ppn || '',
         grand_total: item.grand_total || '',
         keterangan: item.keterangan || '',
-        sumber_perolehan: item.sumber_perolehan || '',
+        id_sumber_perolehan: item.id_sumber_perolehan || '',
         tanggal_pengiriman: item.tanggal_pengiriman || '',
-        status: item.status || 'diproses' });
+        status: item.status || 'Menunggu Proses' });
     } else {
       setEditingId(null);
       const today = new Date().toISOString().split('T')[0];
@@ -122,21 +126,18 @@ export default function PengadaanPage() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const matchedPemasok = pemasokList.find((pem: any) => (pem.id_pemasok || pem.id) == formData.id_pemasok);
-      const pemasokId = matchedPemasok ? (matchedPemasok.id_pemasok || matchedPemasok.id) : (formData.id_pemasok ? Number(formData.id_pemasok) : null);
-
       const payload: any = {
         tanggal_pengadaan: formData.tanggal_pengadaan,
         status: formData.status };
       if (formData.nomor_po) payload.nomor_po = formData.nomor_po;
       if (formData.nomor_faktur) payload.nomor_faktur = formData.nomor_faktur;
-      if (pemasokId) payload.id_pemasok = pemasokId;
+      if (formData.id_pemasok) payload.id_pemasok = Number(formData.id_pemasok);
       if (formData.total_harga) payload.total_harga = Number(formData.total_harga);
       if (formData.persentase_ppn) payload.persentase_ppn = Number(formData.persentase_ppn);
       if (formData.nominal_ppn) payload.nominal_ppn = Number(formData.nominal_ppn);
       if (formData.grand_total) payload.grand_total = Number(formData.grand_total);
       if (formData.keterangan) payload.keterangan = formData.keterangan;
-      if (formData.sumber_perolehan) payload.sumber_perolehan = formData.sumber_perolehan;
+      if (formData.id_sumber_perolehan) payload.id_sumber_perolehan = Number(formData.id_sumber_perolehan);
       if (formData.tanggal_pengiriman) payload.tanggal_pengiriman = formData.tanggal_pengiriman;
 
       if (editingId) {
@@ -148,9 +149,12 @@ export default function PengadaanPage() {
       toast.success('Data berhasil disimpan');
       closeModal();
       fetchData();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Gagal menyimpan data', error);
-      toast.error('Gagal menyimpan data. Periksa kembali input Anda.');
+      const msg = error?.response?.data?.errors
+        ? Object.values(error.response.data.errors).flat().join('. ')
+        : error?.response?.data?.message || 'Gagal menyimpan data. Periksa kembali input Anda.';
+      toast.error(msg);
     } finally {
       setIsSubmitting(false);
     }
@@ -167,13 +171,6 @@ export default function PengadaanPage() {
         toast.error('Gagal menghapus data. Pengadaan mungkin sedang digunakan.');
       }
     }
-  };
-
-  const formatRupiah = (value: number) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0 }).format(value);
   };
 
   const inputClass = "w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900 bg-white";
@@ -248,11 +245,11 @@ export default function PengadaanPage() {
                     <td className="px-4 py-3 text-gray-900 font-semibold">{item.grand_total ? formatRupiah(item.grand_total) : '-'}</td>
                     <td className="px-4 py-3">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium uppercase tracking-wider ${
-                        item.status === 'selesai' ? 'bg-green-100 text-green-800' :
-                        item.status === 'dibelanjakan' ? 'bg-blue-100 text-blue-800' :
+                        item.status === 'Selesai' ? 'bg-green-100 text-green-800' :
+                        item.status === 'Dibelanjakan' ? 'bg-blue-100 text-blue-800' :
                         'bg-yellow-100 text-yellow-800'
                       }`}>
-                        {item.status || 'diproses'}
+                        {item.status || 'Menunggu Proses'}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-right">
@@ -291,7 +288,7 @@ export default function PengadaanPage() {
                 ['Nomor Faktur', selectedItem.nomor_faktur],
                 ['Tanggal Pengadaan', formatDate(selectedItem.tanggal_pengadaan)],
                 ['Pemasok', selectedItem.pemasok?.nama_pemasok],
-                ['Sumber Perolehan', selectedItem.sumber_perolehan],
+                ['Sumber Perolehan', selectedItem.sumber_perolehan?.nama_sumber || '-'],
                 ['Tanggal Pengiriman', selectedItem.tanggal_pengiriman],
                 ['Total Harga', selectedItem.total_harga ? formatRupiah(selectedItem.total_harga) : '-'],
                 ['Persentase PPN', selectedItem.persentase_ppn ? `${selectedItem.persentase_ppn}%` : '-'],
@@ -341,29 +338,30 @@ export default function PengadaanPage() {
 
                 <div>
                   <label className="block font-medium text-gray-700 mb-1">Pemasok</label>
-                  <input
-                    type="text"
-                    value={pemasokList.find((pem: any) => (pem.id_pemasok || pem.id) == formData.id_pemasok)?.nama_pemasok || formData.id_pemasok}
+                  <select
+                    value={formData.id_pemasok}
                     onChange={(e) => setFormData({ ...formData, id_pemasok: e.target.value })}
-                    onFocus={(e) => e.target.select()}
                     className={inputClass}
-                    placeholder="Ketik nama pemasok..."
-                    list="pemasok-list-aset"
-                    autoComplete="off"
-                  />
-                  <datalist id="pemasok-list-aset">
+                  >
+                    <option value="">Pilih Pemasok</option>
                     {pemasokList.map((pem: any) => (
-                      <option key={pem.id_pemasok || pem.id} value={pem.nama_pemasok} data-id={pem.id_pemasok || pem.id} />
+                      <option key={pem.id_pemasok || pem.id} value={pem.id_pemasok || pem.id}>
+                        {pem.nama_pemasok || pem.nama}
+                      </option>
                     ))}
-                  </datalist>
-                  {formData.id_pemasok && pemasokList.find((pem: any) => (pem.id_pemasok || pem.id) == formData.id_pemasok) && (
-                    <button type="button" onClick={() => setFormData({ ...formData, id_pemasok: '' })} className="text-xs text-gray-400 hover:text-red-500 mt-1 cursor-pointer">Hapus pilihan</button>
-                  )}
+                  </select>
                 </div>
 
                 <div>
                   <label className="block font-medium text-gray-700 mb-1">Sumber Perolehan</label>
-                  <input type="text" value={formData.sumber_perolehan} onChange={(e) => setFormData({ ...formData, sumber_perolehan: e.target.value })} className={inputClass} placeholder="APBD, BOS, dll" />
+                  <select value={formData.id_sumber_perolehan} onChange={(e) => setFormData({ ...formData, id_sumber_perolehan: e.target.value })} className={inputClass}>
+                    <option value="">Pilih Sumber</option>
+                    {sumberPerolehanList.map((s: any) => (
+                      <option key={s.id_sumber_perolehan || s.id} value={s.id_sumber_perolehan || s.id}>
+                        {s.nama_sumber || s.nama}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div>
@@ -374,7 +372,7 @@ export default function PengadaanPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block font-medium text-gray-700 mb-1">Total Harga (Rp)</label>
-                    <input type="number" min="0" value={formData.total_harga} onChange={(e) => handleAutoCalcPPN('total_harga', e.target.value)} className={inputClass} placeholder="1500000" />
+                    <CurrencyInput value={formData.total_harga} onChange={(val) => handleAutoCalcPPN('total_harga', val)} className={inputClass} placeholder="0" />
                   </div>
                   <div>
                     <label className="block font-medium text-gray-700 mb-1">PPN (%)</label>
@@ -385,20 +383,20 @@ export default function PengadaanPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block font-medium text-gray-700 mb-1">Nominal PPN (Rp)</label>
-                    <input type="number" min="0" value={formData.nominal_ppn} onChange={(e) => setFormData({ ...formData, nominal_ppn: e.target.value })} className={inputClass} placeholder="Otomatis" />
+                    <CurrencyInput value={formData.nominal_ppn} onChange={(val) => setFormData({ ...formData, nominal_ppn: val })} className={inputClass} placeholder="Otomatis" />
                   </div>
                   <div>
                     <label className="block font-medium text-gray-700 mb-1">Grand Total (Rp)</label>
-                    <input type="number" min="0" value={formData.grand_total} onChange={(e) => setFormData({ ...formData, grand_total: e.target.value })} className={inputClass} placeholder="Otomatis" />
+                    <CurrencyInput value={formData.grand_total} onChange={(val) => setFormData({ ...formData, grand_total: val })} className={inputClass} placeholder="Otomatis" />
                   </div>
                 </div>
 
                 <div>
                   <label className="block font-medium text-gray-700 mb-1">Status</label>
                   <select required value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value })} className={inputClass}>
-                    <option value="diproses">Diproses</option>
-                    <option value="dibelanjakan">Dibelanjakan</option>
-                    <option value="selesai">Selesai</option>
+                    <option value="Menunggu Proses">Menunggu Proses</option>
+                    <option value="Dibelanjakan">Dibelanjakan</option>
+                    <option value="Selesai">Selesai</option>
                   </select>
                 </div>
 

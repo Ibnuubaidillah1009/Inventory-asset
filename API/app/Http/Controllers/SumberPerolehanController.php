@@ -22,7 +22,7 @@ class SumberPerolehanController extends Controller
     {
         $validated = $request->validate([
             'kode_sumber' => 'required|string|max:50|unique:sumber_perolehan,kode_sumber',
-            'nama' => 'required|string|max:100',
+            'nama_sumber' => 'required|string|max:100',
             'keterangan' => 'nullable|string',
             'is_active' => 'boolean'
         ]);

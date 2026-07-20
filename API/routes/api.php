@@ -317,8 +317,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Sumber Perolehan
     Route::prefix('sumber-perolehan')->group(function () {
-        Route::get('/', [SumberPerolehanController::class, 'index'])
-            ->middleware('cek.hak.akses:sumber_perolehan,hak_baca');
+        Route::get('/', [SumberPerolehanController::class, 'index']);
         Route::post('/', [SumberPerolehanController::class, 'store'])
             ->middleware('cek.hak.akses:sumber_perolehan,hak_buat');
         Route::get('/{id}', [SumberPerolehanController::class, 'show'])

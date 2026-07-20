@@ -9,6 +9,7 @@ import { Plus, Pencil, Trash2, X, Loader2, Search, Eye } from 'lucide-react';
 
 import { toast } from 'sonner';
 import DropdownMenu from '@/app/components/DropdownMenu';
+import CurrencyInput from '@/app/components/CurrencyInput';
 
 const statusBadge: Record<string, string> = {
   dalam_perbaikan: 'bg-yellow-100 text-yellow-800',
@@ -232,7 +233,7 @@ export default function PerbaikanPage() {
               </div>
               <div>
                 <label className="block font-medium text-gray-700 mb-1">Biaya (Rp)</label>
-                <input type="number" min="0" value={formData.biaya} onChange={e => setFormData({ ...formData, biaya: e.target.value })} className={inputClass} placeholder="0" />
+                <CurrencyInput value={formData.biaya} onChange={(val) => setFormData({ ...formData, biaya: val })} className={inputClass} placeholder="0" />
               </div>
               <div>
                 <label className="block font-medium text-gray-700 mb-1">Keterangan</label>

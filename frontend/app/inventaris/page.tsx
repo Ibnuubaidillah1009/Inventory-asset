@@ -37,9 +37,9 @@ export default function InventarisPage() {
           asetAktif: asetData.filter((a: any) => a.status === 'Aktif').length,
           asetGudang: asetData.filter((a: any) => a.status === 'Di Gudang').length,
           totalPengadaan: pengadaanData.length,
-          pengadaanDiproses: pengadaanData.filter((p: any) => p.status === 'diproses').length,
+          pengadaanDiproses: pengadaanData.filter((p: any) => p.status === 'Menunggu Proses').length,
           totalPermintaan: permintaanData.length,
-          permintaanMenunggu: permintaanData.filter((p: any) => p.status_persetujuan === 'diproses').length,
+          permintaanMenunggu: permintaanData.filter((p: any) => p.status_persetujuan === 'Menunggu').length,
         });
 
         setRecentAset(asetData.slice(0, 5));
@@ -174,8 +174,8 @@ export default function InventarisPage() {
                         </td>
                         <td className="px-6 py-3">
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium uppercase tracking-wider ${
-                            item.status === 'selesai' ? 'bg-green-100 text-green-800' :
-                            item.status === 'dibelanjakan' ? 'bg-blue-100 text-blue-800' :
+                            item.status === 'Selesai' ? 'bg-green-100 text-green-800' :
+                            item.status === 'Dibelanjakan' ? 'bg-blue-100 text-blue-800' :
                             'bg-yellow-100 text-yellow-800'
                           }`}>
                             {item.status || '-'}

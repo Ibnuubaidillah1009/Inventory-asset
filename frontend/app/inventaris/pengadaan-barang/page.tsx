@@ -2,17 +2,19 @@
 
 import { useState, useEffect } from 'react';
 import api from '@/utils/api';
-import { extractData, formatDate } from '@/lib/utils';
+import { extractData, formatDate, formatRupiah } from '@/lib/utils';
 import { Plus, Pencil, Trash2, X, Loader2, Search, Eye } from 'lucide-react';
 
 import { toast } from 'sonner';
 import DropdownMenu from '@/app/components/DropdownMenu';
+import CurrencyInput from '@/app/components/CurrencyInput';
 
 export default function PengadaanBarangPage() {
   const [data, setData] = useState<any[]>([]);
   const [masterBarangList, setMasterBarangList] = useState<any[]>([]);
   const [gudangList, setGudangList] = useState<any[]>([]);
   const [pemasokList, setPemasokList] = useState<any[]>([]);
+  const [sumberPerolehanList, setSumberPerolehanList] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
@@ -28,8 +30,8 @@ export default function PengadaanBarangPage() {
     keterangan: '',
     kode_gudang: '',
     jumlah_pengadaan: '',
-    sumber_perolehan: '',
-    status: 'diproses' });
+    id_sumber_perolehan: '',
+    status: 'Menunggu Proses' });
 
   const [detailItems, setDetailItems] = useState<Array<{
     id_master_barang: string;
@@ -40,17 +42,19 @@ export default function PengadaanBarangPage() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [resPengadaan, resMaster, resGudang, resPemasok] = await Promise.all([
+      const [resPengadaan, resMaster, resGudang, resPemasok, resSumber] = await Promise.all([
         api.get('/pengadaan').catch(() => ({ data: { data: [] } })),
         api.get('/master-barang').catch(() => ({ data: { data: [] } })),
         api.get('/gudang').catch(() => ({ data: { data: [] } })),
         api.get('/pemasok').catch(() => ({ data: { data: [] } })),
+        api.get('/sumber-perolehan').catch(() => ({ data: { data: [] } })),
       ]);
 
       setData(extractData(resPengadaan.data.data));
       setMasterBarangList(extractData(resMaster.data.data));
       setGudangList(extractData(resGudang.data.data));
       setPemasokList(extractData(resPemasok.data.data));
+      setSumberPerolehanList(extractData(resSumber.data.data));
     } catch (error) {
       console.error('Gagal mengambil data pengadaan', error);
     } finally {
@@ -91,8 +95,8 @@ export default function PengadaanBarangPage() {
         keterangan: item.keterangan || '',
         kode_gudang: item.kode_gudang || '',
         jumlah_pengadaan: item.jumlah_pengadaan || '',
-        sumber_perolehan: item.sumber_perolehan || '',
-        status: item.status || 'diproses' });
+        id_sumber_perolehan: item.id_sumber_perolehan || '',
+        status: item.status || 'Menunggu Proses' });
       setDetailItems(
         item.detail_pengadaan?.map((d: any) => ({
           id_master_barang: d.id_master_barang?.toString() || '',
@@ -108,8 +112,8 @@ export default function PengadaanBarangPage() {
         keterangan: '',
         kode_gudang: '',
         jumlah_pengadaan: '',
-        sumber_perolehan: '',
-        status: 'diproses' });
+        id_sumber_perolehan: '',
+        status: 'Menunggu Proses' });
       setDetailItems([{ id_master_barang: '', jumlah_masuk: '', harga_satuan: '' }]);
     }
     setIsModalOpen(true);
@@ -157,17 +161,14 @@ export default function PengadaanBarangPage() {
         return;
       }
 
-      const matchedPemasok = pemasokList.find((p: any) => (p.id_pemasok || p.id) == formData.id_pemasok);
-      const pemasokId = matchedPemasok ? (matchedPemasok.id_pemasok || matchedPemasok.id) : (formData.id_pemasok ? Number(formData.id_pemasok) : null);
-
       const payload = {
         tanggal_pengadaan: formData.tanggal_pengadaan,
-        id_pemasok: pemasokId,
+        id_pemasok: formData.id_pemasok ? Number(formData.id_pemasok) : null,
         total_harga: formData.total_harga ? Number(formData.total_harga) : null,
         keterangan: formData.keterangan || null,
         kode_gudang: formData.kode_gudang || null,
         jumlah_pengadaan: formData.jumlah_pengadaan ? Number(formData.jumlah_pengadaan) : validDetails.reduce((sum, d) => sum + Number(d.jumlah_masuk), 0),
-        sumber_perolehan: formData.sumber_perolehan || null,
+        id_sumber_perolehan: formData.id_sumber_perolehan ? Number(formData.id_sumber_perolehan) : null,
         status: formData.status,
         detail: validDetails.map(d => ({
           id_master_barang: Number(d.id_master_barang),
@@ -182,9 +183,12 @@ export default function PengadaanBarangPage() {
       toast.success('Data berhasil disimpan');
       closeModal();
       fetchData();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Gagal menyimpan data', error);
-      toast.error('Gagal menyimpan data. Periksa kembali input Anda.');
+      const msg = error?.response?.data?.errors
+        ? Object.values(error.response.data.errors).flat().join('. ')
+        : error?.response?.data?.message || 'Gagal menyimpan data. Periksa kembali input Anda.';
+      toast.error(msg);
     } finally {
       setIsSubmitting(false);
     }
@@ -201,13 +205,6 @@ export default function PengadaanBarangPage() {
         toast.error('Gagal menghapus data. Pengadaan mungkin sudah terkait dengan aset.');
       }
     }
-  };
-
-  const formatRupiah = (value: number) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0 }).format(value);
   };
 
   return (
@@ -278,8 +275,8 @@ export default function PengadaanBarangPage() {
                     <td className="px-6 py-4 text-gray-900">{formatRupiah(item.total_harga || 0)}</td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium uppercase tracking-wider ${
-                        item.status === 'selesai' ? 'bg-green-100 text-green-800' :
-                        item.status === 'dibelanjakan' ? 'bg-blue-100 text-blue-800' :
+                        item.status === 'Selesai' ? 'bg-green-100 text-green-800' :
+                        item.status === 'Dibelanjakan' ? 'bg-blue-100 text-blue-800' :
                         'bg-yellow-100 text-yellow-800'
                       }`}>
                         {item.status || '-'}
@@ -337,7 +334,7 @@ export default function PengadaanBarangPage() {
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">Sumber Perolehan</label>
-                  <div className="text-gray-900 font-medium bg-gray-50 p-2 rounded-md border border-gray-100">{selectedItem.sumber_perolehan || '-'}</div>
+                  <div className="text-gray-900 font-medium bg-gray-50 p-2 rounded-md border border-gray-100">{selectedItem.sumber_perolehan?.nama_sumber || '-'}</div>
                 </div>
                 <div className="sm:col-span-2">
                   <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">Keterangan</label>
@@ -413,9 +410,9 @@ export default function PengadaanBarangPage() {
                       onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                       className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900 bg-white"
                     >
-                      <option value="diproses">Diproses</option>
-                      <option value="dibelanjakan">Dibelanjakan</option>
-                      <option value="selesai">Selesai</option>
+                      <option value="Menunggu Proses">Menunggu Proses</option>
+                      <option value="Dibelanjakan">Dibelanjakan</option>
+                      <option value="Selesai">Selesai</option>
                     </select>
                   </div>
                   <div>
@@ -435,52 +432,41 @@ export default function PengadaanBarangPage() {
                   </div>
                   <div>
                     <label className="block font-medium text-gray-700 mb-1">Pemasok</label>
-                    <input
-                      type="text"
-                      value={pemasokList.find((p: any) => (p.id_pemasok || p.id) == formData.id_pemasok)?.nama_pemasok || formData.id_pemasok}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setFormData({ ...formData, id_pemasok: val });
-                      }}
-                      onFocus={(e) => e.target.select()}
+                    <select
+                      value={formData.id_pemasok}
+                      onChange={(e) => setFormData({ ...formData, id_pemasok: e.target.value })}
                       className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900 bg-white"
-                      placeholder="Ketik nama pemasok..."
-                      list="pemasok-list-pengadaan"
-                      autoComplete="off"
-                    />
-                    <datalist id="pemasok-list-pengadaan">
+                    >
+                      <option value="">Pilih Pemasok</option>
                       {pemasokList.map((p: any) => (
-                        <option key={p.id_pemasok || p.id} value={p.nama_pemasok || p.nama} data-id={p.id_pemasok || p.id} />
+                        <option key={p.id_pemasok || p.id} value={p.id_pemasok || p.id}>
+                          {p.nama_pemasok || p.nama}
+                        </option>
                       ))}
-                    </datalist>
-                    {formData.id_pemasok && pemasokList.find((p: any) => (p.id_pemasok || p.id) == formData.id_pemasok) && (
-                      <button type="button" onClick={() => setFormData({ ...formData, id_pemasok: '' })} className="text-xs text-gray-400 hover:text-red-500 mt-1 cursor-pointer">Hapus pilihan</button>
-                    )}
+                    </select>
                   </div>
                   <div>
                     <label className="block font-medium text-gray-700 mb-1">Total Harga (Rp)</label>
-                    <input
-                      type="number"
-                      min="0"
+                    <CurrencyInput
                       value={formData.total_harga}
-                      onChange={(e) => setFormData({ ...formData, total_harga: e.target.value })}
+                      onChange={(val) => setFormData({ ...formData, total_harga: val })}
                       className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900"
-                      placeholder="Misal: 50000000"
+                      placeholder="0"
                     />
                   </div>
                   <div>
                     <label className="block font-medium text-gray-700 mb-1">Sumber Perolehan</label>
                     <select
-                      value={formData.sumber_perolehan}
-                      onChange={(e) => setFormData({ ...formData, sumber_perolehan: e.target.value })}
+                      value={formData.id_sumber_perolehan}
+                      onChange={(e) => setFormData({ ...formData, id_sumber_perolehan: e.target.value })}
                       className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900 bg-white"
                     >
                       <option value="">Pilih Sumber</option>
-                      <option value="APBD">APBD</option>
-                      <option value="BOS">BOS</option>
-                      <option value="Hibah">Hibah</option>
-                      <option value="Swadaya">Swadaya</option>
-                      <option value="Lainnya">Lainnya</option>
+                      {sumberPerolehanList.map((s: any) => (
+                        <option key={s.id_sumber_perolehan || s.id} value={s.id_sumber_perolehan || s.id}>
+                          {s.nama_sumber || s.nama}
+                        </option>
+                      ))}
                     </select>
                   </div>
                   <div className="sm:col-span-2">
@@ -531,11 +517,9 @@ export default function PengadaanBarangPage() {
                           className="w-24 rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900"
                           placeholder="Jumlah"
                         />
-                        <input
-                          type="number"
-                          min="0"
+                        <CurrencyInput
                           value={item.harga_satuan}
-                          onChange={(e) => updateDetailItem(index, 'harga_satuan', e.target.value)}
+                          onChange={(val) => updateDetailItem(index, 'harga_satuan', val)}
                           className="w-32 rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900"
                           placeholder="Harga"
                         />

@@ -26,11 +26,11 @@ class StorePengadaanRequest extends FormRequest
             'grand_total'             => ['nullable', 'numeric', 'min:0'],
             'keterangan'              => ['nullable', 'string'],
             'kode_gudang'             => ['nullable', 'string'],
-            'id_sumber_perolehan'     => ['nullable', 'integer'],
+            'id_sumber_perolehan'     => ['nullable', 'integer', 'exists:sumber_perolehan,id_sumber_perolehan'],
             'id_kondisi'              => ['nullable', 'integer', 'exists:kondisi,id_kondisi'],
-            'sumber_perolehan'        => ['nullable', 'string', 'max:100'],
             'tanggal_pengiriman'      => ['nullable', 'date'],
             'nomor_po_lampiran'       => ['nullable', 'string', 'max:255'],
+            'status'                  => ['nullable', 'in:Menunggu Proses,Dibelanjakan,Selesai'],
             'permintaan'              => ['nullable', 'array'],
             'permintaan.*'            => ['string', 'exists:permintaan,kode_permintaan'],
             'detail'                  => ['nullable', 'array'],
@@ -45,6 +45,7 @@ class StorePengadaanRequest extends FormRequest
         return [
             'nomor_po.unique'           => 'Nomor PO sudah digunakan.',
             'tanggal_pengadaan.required' => 'Tanggal pengadaan wajib diisi.',
+            'status.in'                 => 'Status pengadaan tidak valid.',
         ];
     }
 

@@ -12,7 +12,7 @@ class SumberPerolehan extends Model
 
     protected $fillable = [
         'kode_sumber',
-        'nama',
+        'nama_sumber',
         'keterangan',
         'is_active',
     ];

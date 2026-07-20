@@ -17,13 +17,12 @@ class PengadaanController extends Controller
 {
     public function index(): JsonResponse
     {
-        $data = Pengadaan::with(['pemasok', 'gudang', 'kondisi', 'permintaan', 'detailPengadaan.masterBarang'])
+        $data = Pengadaan::with(['pemasok', 'gudang', 'kondisi', 'sumberPerolehan', 'permintaan', 'detailPengadaan.masterBarang'])
             ->when(request('search'), function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('nomor_po', 'like', "%{$search}%")
                       ->orWhere('nomor_faktur', 'like', "%{$search}%")
                       ->orWhere('keterangan', 'like', "%{$search}%")
-                      ->orWhere('sumber_perolehan', 'like', "%{$search}%")
                       ->orWhere('status', 'like', "%{$search}%");
                 });
             })
@@ -57,10 +56,10 @@ class PengadaanController extends Controller
                 'kode_gudang'           => $validated['kode_gudang'] ?? null,
                 'jumlah_pengadaan'      => $jumlah_pengadaan,
                 'id_kondisi'            => $validated['id_kondisi'] ?? null,
-                'sumber_perolehan'      => $validated['sumber_perolehan'] ?? null,
+                'id_sumber_perolehan'   => $validated['id_sumber_perolehan'] ?? null,
                 'tanggal_pengiriman'    => $validated['tanggal_pengiriman'] ?? null,
                 'nomor_po_lampiran'     => $validated['nomor_po_lampiran'] ?? null,
-                'status'                => 'diproses',
+                'status'                => $validated['status'] ?? 'Menunggu Proses',
             ]);
 
             if (!empty($validated['detail'])) {
@@ -80,7 +79,7 @@ class PengadaanController extends Controller
 
             DB::commit();
 
-            $pengadaan->load(['pemasok', 'gudang', 'kondisi', 'permintaan', 'detailPengadaan.masterBarang']);
+            $pengadaan->load(['pemasok', 'gudang', 'kondisi', 'sumberPerolehan', 'permintaan', 'detailPengadaan.masterBarang']);
 
             return response()->json([
                 'status'  => true,
@@ -98,7 +97,7 @@ class PengadaanController extends Controller
 
     public function show(int $id): JsonResponse
     {
-        $pengadaan = Pengadaan::with(['pemasok', 'gudang', 'kondisi', 'permintaan', 'detailPengadaan.masterBarang', 'aset'])->find($id);
+        $pengadaan = Pengadaan::with(['pemasok', 'gudang', 'kondisi', 'sumberPerolehan', 'permintaan', 'detailPengadaan.masterBarang', 'aset'])->find($id);
         if (!$pengadaan) return response()->json(['status' => false, 'message' => 'Pengadaan tidak ditemukan.'], 404);
 
         return response()->json([
@@ -154,7 +153,7 @@ class PengadaanController extends Controller
                 $pengadaan->permintaan()->sync($validated['permintaan']);
             }
 
-            if (isset($validated['status']) && $validated['status'] === 'dibelanjakan') {
+            if (isset($validated['status']) && $validated['status'] === 'Dibelanjakan') {
                 $this->generateAset($pengadaan);
             }
 
@@ -163,7 +162,7 @@ class PengadaanController extends Controller
             return response()->json([
                 'status'  => true,
                 'message' => 'Pengadaan berhasil diperbarui.',
-                'data'    => new PengadaanResource($pengadaan->fresh(['pemasok', 'gudang', 'kondisi', 'permintaan', 'detailPengadaan.masterBarang', 'aset'])),
+                'data'    => new PengadaanResource($pengadaan->fresh(['pemasok', 'gudang', 'kondisi', 'sumberPerolehan', 'permintaan', 'detailPengadaan.masterBarang', 'aset'])),
             ]);
         } catch (Exception $e) {
             DB::rollBack();
