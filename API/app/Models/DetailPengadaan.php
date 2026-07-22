@@ -39,4 +39,9 @@ class DetailPengadaan extends Model
     {
         return $this->belongsTo(MasterBarang::class, 'id_master_barang', 'id_master_barang');
     }
+
+    public function aset()
+    {
+        return $this->hasMany(Aset::class, 'id_detail_pengadaan', 'id_detail_pengadaan');
+    }
 }

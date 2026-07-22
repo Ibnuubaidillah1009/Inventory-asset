@@ -31,7 +31,7 @@ export default function ProsesOpnamePage() {
       const [resOpname, resAset, resKondisi] = await Promise.all([
         api.get('/opname-aset').catch(() => ({ data: { data: [] } })),
         api.get('/aset').catch(() => ({ data: { data: [] } })),
-        api.get('/kondisi').catch(() => ({ data: { data: [] } })),
+        api.get('/aset-kondisi').catch(() => ({ data: { data: [] } })),
       ]);
       setData(extractData(resOpname.data.data));
       setAsetList(extractData(resAset.data.data));

@@ -22,8 +22,8 @@ export default function LaporanBarangPage() {
   useEffect(() => { fetchData(); }, []);
 
   const totalBarang = data.length;
-  const barangAktif = data.filter((item: any) => item.status === 'aktif').length;
-  const barangNonAktif = data.filter((item: any) => item.status === 'non-aktif').length;
+  const barangAktif = data.filter((item: any) => item.status === 'Aktif' || item.status === 'aktif').length;
+  const barangNonAktif = data.filter((item: any) => item.status === 'Nonaktif' || item.status === 'non-aktif').length;
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
@@ -47,8 +47,8 @@ export default function LaporanBarangPage() {
           <p className="text-2xl font-semibold text-green-600">{barangAktif}</p>
         </div>
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
-          <p className="text-sm text-gray-500">Non-Aktif</p>
-          <p className="text-2xl font-semibold text-red-600">{barangNonAktif}</p>
+          <p className="text-sm text-gray-500">Non-Aktif / Di Gudang / Dipinjam</p>
+          <p className="text-2xl font-semibold text-amber-600">{totalBarang - barangAktif}</p>
         </div>
       </div>
 
@@ -72,15 +72,23 @@ export default function LaporanBarangPage() {
               ) : data.length === 0 ? (
                 <tr><td colSpan={7} className="px-6 py-12 text-center text-gray-500">Tidak ada data barang.</td></tr>
               ) : data.map((item, i) => (
-                <tr key={item.id || i} className="hover:bg-gray-50 transition-colors">
+                <tr key={item.kode_barang || item.id || i} className="hover:bg-gray-50 transition-colors">
                   <td className="px-4 py-3 text-gray-500">{i + 1}</td>
-                  <td className="px-4 py-3 font-mono text-xs text-gray-700">{item.kode_barang || '-'}</td>
-                  <td className="px-4 py-3 font-medium text-gray-900">{item.nama_barang || '-'}</td>
-                  <td className="px-4 py-3 text-gray-700">{item.merek || '-'}</td>
+                  <td className="px-4 py-3 font-mono text-xs text-gray-700">{item.kode_inventaris || item.kode_barang || '-'}</td>
+                  <td className="px-4 py-3 font-medium text-gray-900">{item.master_barang?.nama_barang || item.nama_barang || '-'}</td>
+                  <td className="px-4 py-3 text-gray-700">{item.master_barang?.merek?.nama_merek || item.merek || '-'}</td>
                   <td className="px-4 py-3 text-gray-700">{item.ruang?.nama_ruang || '-'}</td>
                   <td className="px-4 py-3 text-gray-700">{item.kondisi?.nama_kondisi || '-'}</td>
                   <td className="px-4 py-3">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${item.status === 'aktif' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                      item.status === 'Aktif' || item.status === 'aktif'
+                        ? 'bg-green-100 text-green-800'
+                        : item.status === 'Di Gudang'
+                        ? 'bg-blue-100 text-blue-800'
+                        : item.status === 'Dipinjam'
+                        ? 'bg-yellow-100 text-yellow-800'
+                        : 'bg-red-100 text-red-800'
+                    }`}>
                       {item.status || '-'}
                     </span>
                   </td>

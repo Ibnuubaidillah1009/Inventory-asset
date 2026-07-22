@@ -69,7 +69,14 @@ class Pengadaan extends Model
 
     public function aset()
     {
-        return $this->hasMany(Aset::class, 'id_pengadaan', 'id_pengadaan');
+        return $this->hasManyThrough(
+            Aset::class,
+            DetailPengadaan::class,
+            'id_pengadaan',        // FK di detail_pengadaan → pengadaan
+            'id_detail_pengadaan', // FK di aset → detail_pengadaan
+            'id_pengadaan',        // PK di pengadaan
+            'id_detail_pengadaan'  // PK di detail_pengadaan
+        );
     }
 
     public function permintaan()

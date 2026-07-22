@@ -67,7 +67,7 @@ export default function AsetPage() {
         api.get('/jurusan').catch(() => ({ data: { data: [] } })),
         api.get('/ruang').catch(() => ({ data: { data: [] } })),
         api.get('/lokasi').catch(() => ({ data: { data: [] } })),
-        api.get('/kondisi').catch(() => ({ data: { data: [] } })),
+        api.get('/aset-kondisi').catch(() => ({ data: { data: [] } })),
       ]);
 
       setData(extractData(resAset.data.data));

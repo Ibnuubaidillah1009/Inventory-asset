@@ -6,6 +6,7 @@ import { extractData, formatDate } from '@/lib/utils';
 import { Plus, X, Loader2, Search, Eye, Printer } from 'lucide-react';
 
 import { toast } from 'sonner';
+import DropdownMenu from '@/app/components/DropdownMenu';
 
 export default function PeminjamanPage() {
   const [data, setData] = useState<any[]>([]);
@@ -326,8 +327,10 @@ export default function PeminjamanPage() {
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">{item.status_peminjaman}</span>
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <button onClick={() => { setSelectedItem(item); setIsDetailOpen(true); }} className="text-gray-400 hover:text-blue-600 mr-3 cursor-pointer" title="Rincian"><Eye className="h-4 w-4" /></button>
-                      <button onClick={() => { setPrintData(item); }} className="text-gray-400 hover:text-blue-600 cursor-pointer" title="Cetak"><Printer className="h-4 w-4" /></button>
+                      <DropdownMenu actions={[
+                        { label: 'Lihat Detail', icon: Eye, onClick: () => { setSelectedItem(item); setIsDetailOpen(true); }, variant: 'default' },
+                        { label: 'Cetak', icon: Printer, onClick: () => { setPrintData(item); }, variant: 'default' },
+                      ]} />
                     </td>
                   </tr>
                 ))}

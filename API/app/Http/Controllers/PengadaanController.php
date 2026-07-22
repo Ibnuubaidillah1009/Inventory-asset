@@ -120,12 +120,12 @@ class PengadaanController extends Controller
                 'nomor_po', 'nomor_faktur', 'tanggal_pengadaan', 'id_pemasok',
                 'total_harga', 'persentase_ppn', 'nominal_ppn', 'grand_total',
                 'keterangan', 'kode_gudang', 'jumlah_pengadaan', 'id_kondisi',
-                'sumber_perolehan', 'tanggal_pengiriman', 'nomor_po_lampiran', 'status',
+                'id_sumber_perolehan', 'tanggal_pengiriman', 'nomor_po_lampiran', 'status',
             ];
 
             $updateData = [];
             foreach ($allowedFields as $field) {
-                if (isset($validated[$field])) {
+                if (array_key_exists($field, $validated)) {
                     $updateData[$field] = $validated[$field];
                 }
             }
@@ -181,8 +181,14 @@ class PengadaanController extends Controller
         DB::beginTransaction();
         try {
             $pengadaan->permintaan()->detach();
+
+            // Hapus aset melalui detail_pengadaan (aset -> detail_pengadaan -> pengadaan)
+            $detailIds = $pengadaan->detailPengadaan()->pluck('id_detail_pengadaan');
+            if ($detailIds->isNotEmpty()) {
+                Aset::whereIn('id_detail_pengadaan', $detailIds)->delete();
+            }
+
             $pengadaan->detailPengadaan()->delete();
-            $pengadaan->aset()->delete();
             $pengadaan->delete();
 
             DB::commit();

@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import api from '@/utils/api';
-import { Plus, X, Loader2, Search, ArrowRightLeft, Pencil, Trash2 } from 'lucide-react';
+import { Plus, X, Loader2, Search, ArrowRightLeft, Pencil, Trash2, Eye } from 'lucide-react';
 import { extractData, formatDate } from '@/lib/utils';
 
 import { toast } from 'sonner';
+import DropdownMenu from '@/app/components/DropdownMenu';
 
 interface MutasiItem {
   id_mutasi: number;
@@ -162,7 +163,7 @@ export default function MutasiBarangPage() {
                 <th className="px-6 py-4 font-medium">Jurusan Tujuan</th>
                 <th className="px-6 py-4 font-medium">Tanggal</th>
                 <th className="px-6 py-4 font-medium">Alasan</th>
-                <th className="px-6 py-4 font-medium text-center">Aksi</th>
+                <th className="px-6 py-4 font-medium text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -178,18 +179,12 @@ export default function MutasiBarangPage() {
                   <td className="px-6 py-4 text-gray-900 font-medium">{item.jurusan_tujuan?.nama_jurusan || '-'}</td>
                   <td className="px-6 py-4 text-gray-500">{formatDate(item.tanggal_mutasi)}</td>
                   <td className="px-6 py-4 text-gray-500 max-w-xs truncate">{item.alasan_mutasi || '-'}</td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center justify-center gap-2">
-                      <button onClick={() => openDetailModal(item)} title="Rincian" className="p-1.5 rounded-md text-gray-400 hover:text-gray-900 hover:bg-gray-100 transition-colors cursor-pointer">
-                        <Search className="h-4 w-4" />
-                      </button>
-                      <button onClick={() => openEditModal(item)} title="Ubah" className="p-1.5 rounded-md text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer">
-                        <Pencil className="h-4 w-4" />
-                      </button>
-                      <button onClick={() => handleDelete(item)} title="Hapus" className="p-1.5 rounded-md text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer">
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </div>
+                  <td className="px-6 py-4 text-right">
+                    <DropdownMenu actions={[
+                      { label: 'Lihat Detail', icon: Eye, onClick: () => openDetailModal(item), variant: 'default' },
+                      { label: 'Ubah', icon: Pencil, onClick: () => openEditModal(item), variant: 'default' },
+                      { label: 'Hapus', icon: Trash2, onClick: () => handleDelete(item), variant: 'danger' },
+                    ]} />
                   </td>
                 </tr>
               ))}
