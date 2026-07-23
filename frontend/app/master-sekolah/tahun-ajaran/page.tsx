@@ -22,7 +22,7 @@ export default function TahunAjaranPage() {
 
   const [formData, setFormData] = useState({
     tahun_ajaran: '',
-    status: 'non-aktif' });
+    is_active: false });
 
   const fetchData = async (page = 1, search = searchQuery) => {
     setLoading(true);
@@ -54,10 +54,10 @@ export default function TahunAjaranPage() {
       setEditingId(item.id_tahun_ajaran || item.id);
       setFormData({
         tahun_ajaran: item.tahun_ajaran || '',
-        status: item.status || 'non-aktif' });
+        is_active: item.is_active ?? false });
     } else {
       setEditingId(null);
-      setFormData({ tahun_ajaran: '', status: 'non-aktif' });
+      setFormData({ tahun_ajaran: '', is_active: false });
     }
     setIsModalOpen(true);
   };
@@ -174,7 +174,7 @@ export default function TahunAjaranPage() {
                     <td className="px-6 py-4 font-medium text-gray-900">{item.id_tahun_ajaran || item.id}</td>
                     <td className="px-6 py-4 text-gray-900">{item.tahun_ajaran}</td>
                     <td className="px-6 py-4">
-                      {item.status === 'aktif' ? (
+                      {item.is_active ? (
                         <span className="inline-flex items-center rounded-full bg-green-50 px-2.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
                           Aktif
                         </span>
@@ -247,8 +247,8 @@ export default function TahunAjaranPage() {
               <div>
                 <label className="block font-medium text-gray-700 mb-1">Status</label>
                 <select
-                  value={formData.status}
-                  onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                  value={formData.is_active ? 'aktif' : 'non-aktif'}
+                  onChange={(e) => setFormData({ ...formData, is_active: e.target.value === 'aktif' })}
                   className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900"
                 >
                   <option value="aktif">Aktif</option>
